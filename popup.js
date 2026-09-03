@@ -12,11 +12,13 @@ const PREFS_KEY = 'cmp.prefs';
 const PRIVACY_KEY = 'cmp.privacy';
 const LOCK_KEY = 'cmp.lock';
 const SITES_KEY = 'cmp.sites';
+const THEME_KEY = 'cmp.theme';
 const SIGNAL_KEY = 'cmp.toggleSignal';
 const LOCK_SIGNAL = 'cmp.lockSignal';
 
 const DEFAULTS = { sort: 'newest', filter: 'all' };
 const SITES_DEFAULTS = { claude: true, chatgpt: true, gemini: true };
+const THEME_DEFAULTS = { font: 'system', size: 'medium', density: 'comfortable', accent: 'default' };
 const PRIVACY_DEFAULTS = {
   on: false, titles: true, messages: true, media: true,
   account: true, input: true, hover: true, strength: 'medium',
@@ -56,6 +58,33 @@ function saveSites() {
 }
 
 Object.values(S).forEach((node) => node.addEventListener('change', saveSites));
+
+/* ---------- chat list appearance ---------- */
+const T = {
+  font: $('t-font'),
+  size: $('t-size'),
+  density: $('t-density'),
+  accent: $('t-accent'),
+};
+const themeMsg = $('t-msg');
+
+function saveTheme() {
+  const value = {};
+  Object.entries(T).forEach(([key, node]) => { value[key] = node.value; });
+  chrome.storage.local.set({ [THEME_KEY]: value });
+  themeMsg.textContent = '';
+}
+
+Object.values(T).forEach((node) => node.addEventListener('change', saveTheme));
+
+// Reset touches appearance only. A colour you dislike should never cost you
+// your sort order, blur settings or screen-lock password.
+$('t-reset').addEventListener('click', () => {
+  Object.entries(T).forEach(([key, node]) => { node.value = THEME_DEFAULTS[key]; });
+  chrome.storage.local.set({ [THEME_KEY]: { ...THEME_DEFAULTS } }, () => {
+    themeMsg.textContent = 'Appearance reset. Other settings untouched.';
+  });
+});
 
 /* ---------- screen lock ---------- */
 const lockUnset = $('lock-unset');
@@ -102,11 +131,14 @@ $('lock-now').addEventListener('click', () => {
 });
 
 /* ---------- load ---------- */
-chrome.storage.local.get([PREFS_KEY, PRIVACY_KEY, LOCK_KEY, SITES_KEY], (res) => {
+chrome.storage.local.get([PREFS_KEY, PRIVACY_KEY, LOCK_KEY, SITES_KEY, THEME_KEY], (res) => {
   showLockState(Boolean(res && res[LOCK_KEY] && res[LOCK_KEY].record));
 
   const sites = { ...SITES_DEFAULTS, ...(res && res[SITES_KEY]) };
   Object.entries(S).forEach(([id, node]) => { node.checked = sites[id] !== false; });
+
+  const t = { ...THEME_DEFAULTS, ...(res && res[THEME_KEY]) };
+  Object.entries(T).forEach(([key, node]) => { node.value = t[key]; });
   const prefs = { ...DEFAULTS, ...(res && res[PREFS_KEY]) };
   sortSel.value = prefs.sort;
   filterSel.value = prefs.filter;

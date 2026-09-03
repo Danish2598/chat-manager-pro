@@ -67,6 +67,33 @@ changes.
 
 ---
 
+## Chat list appearance
+
+Font, title size, density and accent for the chat titles you are managing —
+applied both in the site's own sidebar and in the panel. Set them in the toolbar
+popup under **Chat list appearance**.
+
+Three deliberate constraints:
+
+- **Presets, not a colour picker.** Everything is driven by classes on `<html>`,
+  the same mechanism as the blur, so no runtime style injection is involved and
+  nothing a page's CSP can block. It also makes white-on-white unreachable.
+- **Opt-in by construction.** The default choice for each setting adds no class
+  at all, so an untouched install changes nothing about how the site looks.
+- **Reset is appearance-only, and lives in the popup.** A colour you dislike
+  should never cost you your sort order, blur settings or screen-lock password.
+  It sits in the popup rather than the panel because the popup is our own page —
+  it stays readable no matter what you have done to the site.
+
+The theme selectors are **generated from the `PRIVACY BLUR` titles list**, so
+adding a site covers blur and appearance together. If you extend that list by
+hand, extend the appearance list to match.
+
+Density on the host site is best-effort — the sidebar link usually is the row,
+but not always. In our own panel it is exact.
+
+---
+
 ## Screen lock
 
 Locks the page behind a password so nobody can read or use your chats while you
@@ -200,7 +227,7 @@ manifest.json     Extension config (MV3)
 content.js        Site-agnostic panel, selection, delete pipeline, blur, lock
 sites.js          Per-site adapters (Claude, ChatGPT) — all site knowledge
 lock-crypto.js    PBKDF2 password hashing, shared by popup and content script
-content.css       Panel styling + privacy blur + lock overlay (light + dark)
+content.css       Panel styling + blur + lock overlay + appearance (light/dark)
 popup.html/js/css Thin launcher and default preferences
 background.js     Service worker; seeds defaults, forwards the shortcut
 icons/            16 / 48 / 128 px PNGs

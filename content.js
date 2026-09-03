@@ -33,6 +33,7 @@
   const LOCK_KEY = 'cmp.lock';
   const LOCK_SIGNAL = 'cmp.lockSignal';
   const SITES_KEY = 'cmp.sites';
+  const THEME_KEY = 'cmp.theme';
   const DEFAULTS = { sort: 'newest', filter: 'all' };
   const PRIVACY_DEFAULTS = {
     on: false,
@@ -47,6 +48,15 @@
   const LOCK_DEFAULTS = { record: null, locked: false };
   // Which sites the extension is allowed to act on. Absent means enabled.
   const SITES_DEFAULTS = { claude: true, chatgpt: true, gemini: true };
+  const THEME_DEFAULTS = { font: 'system', size: 'medium', density: 'comfortable', accent: 'default' };
+  // Only non-default choices have a class. An untouched install adds nothing
+  // to the page, so the default look is genuinely the site's own.
+  const THEME_CLASSES = {
+    font: ['serif', 'mono'],
+    size: ['small', 'large'],
+    density: ['compact'],
+    accent: ['blue', 'teal', 'violet', 'amber', 'rose', 'slate'],
+  };
   const PAGE_SIZE = 100;      // conversations fetched per request
   const MAX_PAGES = 40;       // hard stop so a bad cursor can't loop forever
   const DELETE_GAP_MS = 350;  // spacing between deletes, avoids rate limiting
@@ -85,6 +95,7 @@
   const privacy = { ...PRIVACY_DEFAULTS };
   const lock = { ...LOCK_DEFAULTS };
   const siteEnabled = { ...SITES_DEFAULTS };
+  const theme = { ...THEME_DEFAULTS };
 
   /** Whether the extension should do anything at all on this site. */
   let active = false;
@@ -93,12 +104,14 @@
   function loadPrefs() {
     return new Promise((resolve) => {
       try {
-        chrome.storage.local.get([PREFS_KEY, PRIVACY_KEY, LOCK_KEY, SITES_KEY], (res) => {
+        chrome.storage.local.get(
+          [PREFS_KEY, PRIVACY_KEY, LOCK_KEY, SITES_KEY, THEME_KEY], (res) => {
           if (!chrome.runtime.lastError && res) {
             if (res[PREFS_KEY]) Object.assign(prefs, res[PREFS_KEY]);
             if (res[PRIVACY_KEY]) Object.assign(privacy, res[PRIVACY_KEY]);
             if (res[LOCK_KEY]) Object.assign(lock, res[LOCK_KEY]);
             if (res[SITES_KEY]) Object.assign(siteEnabled, res[SITES_KEY]);
+            if (res[THEME_KEY]) Object.assign(theme, res[THEME_KEY]);
           }
           resolve();
         });
@@ -112,6 +125,17 @@
     try {
       chrome.storage.local.set({ [PREFS_KEY]: { sort: prefs.sort, filter: prefs.filter } });
     } catch { /* storage unavailable; preferences simply won't persist */ }
+  }
+
+  /**
+   * Chat list readability. Like the blur, this only flips classes on <html> —
+   * the selectors live in content.css and no page DOM is touched.
+   */
+  function applyTheme() {
+    const c = document.documentElement.classList;
+    Object.entries(THEME_CLASSES).forEach(([key, values]) => {
+      values.forEach((v) => c.toggle(`cmp-${key}-${v}`, active && theme[key] === v));
+    });
   }
 
   function savePrivacy() {
@@ -909,12 +933,14 @@
         if (!root) buildUI();
         root.style.display = '';
         applyPrivacy();
+        applyTheme();
         applyLock();
         render();
       } else {
         closePanel();
         if (root) root.style.display = 'none';
         applyPrivacy();   // clears the blur classes
+        applyTheme();     // clears the appearance classes
         applyLock();      // clears the lock class and overlay
       }
     });
@@ -952,6 +978,11 @@
       if (changes[SITES_KEY] && changes[SITES_KEY].newValue) {
         Object.assign(siteEnabled, changes[SITES_KEY].newValue);
         applyEnabled();
+      }
+      if (changes[THEME_KEY] && changes[THEME_KEY].newValue) {
+        // Appearance changed in the popup — including a reset.
+        Object.assign(theme, THEME_DEFAULTS, changes[THEME_KEY].newValue);
+        applyTheme();
       }
       // A disabled site ignores shortcuts; enabled tabs still act on them.
       if (changes[PRIVACY_SIGNAL] && active) togglePrivacy();
@@ -1000,6 +1031,7 @@
     // lands before the page paints its content — a privacy tool that flashes
     // the very thing it is meant to hide is worse than no privacy tool.
     applyPrivacy();
+    applyTheme();
     // The locked class blurs the page from CSS alone, before any overlay
     // exists — so a reload while locked never exposes content.
     document.documentElement.classList.toggle('cmp-locked', Boolean(lock.locked));

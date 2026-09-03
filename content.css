@@ -10,7 +10,7 @@
   --cmp-border: #e3e2dd;
   --cmp-text: #1f1e1c;
   --cmp-text-dim: #6f6d66;
-  --cmp-accent: #3b6fd4;
+  --cmp-accent: var(--cmp-accent-user, #3b6fd4);
   --cmp-danger: #c8443a;
   --cmp-danger-hover: #a93831;
   --cmp-selected: #eaf0fc;
@@ -35,7 +35,7 @@
     --cmp-border: #3b392f;
     --cmp-text: #efeee6;
     --cmp-text-dim: #a3a096;
-    --cmp-accent: #7fa4ec;
+    --cmp-accent: var(--cmp-accent-user, #7fa4ec);
     --cmp-danger: #e0655a;
     --cmp-danger-hover: #f07b70;
     --cmp-selected: #2f3a4d;
@@ -638,4 +638,193 @@ html.cmp-locked body > *:not(#cmp-root) {
   color: var(--cmp-text-dim);
   text-align: right;
   max-width: 260px;
+}
+
+
+/* ==========================================================================
+ * CHAT LIST READABILITY
+ *
+ * Font, size, density and accent for the chat titles you are managing —
+ * in the site's own sidebar and in our panel.
+ *
+ * Every rule is opt-in: the default choice adds no class at all, so an
+ * untouched install changes nothing on the page.
+ *
+ * The selector list below is GENERATED FROM the PRIVACY BLUR titles rule
+ * above. If you add a site there, re-run the generator in the commit that
+ * introduced this block, or add the selector to both lists by hand.
+ * ========================================================================== */
+
+/* --- font ---------------------------------------------------------------- */
+html.cmp-font-serif :is(
+  a[href^="/chat/"],
+  a[href^="/cowork/"],
+  a[href^="/code/"],
+  a[href^="/project/"],
+  a[href^="/projects/"],
+  a[href^="/artifacts/"],
+  a[href^="/chat/"],
+  a[href^="/cowork/"],
+  a[href^="/code/"],
+  a[href^="/project/"],
+  a[href^="/projects/"],
+  a[href^="/artifacts/"],
+  a[href^="/recents/"],
+  a[href^="/c/"],
+  a[href^="/g/"],
+  a[href^="/app/"],
+  [data-test-id="conversation"],
+  .conversation-title,
+  .conversation,
+  .cmp-item-title
+) {
+  font-family: ui-serif, Georgia, "Times New Roman", serif;
+}
+
+html.cmp-font-mono :is(
+  a[href^="/chat/"],
+  a[href^="/cowork/"],
+  a[href^="/code/"],
+  a[href^="/project/"],
+  a[href^="/projects/"],
+  a[href^="/artifacts/"],
+  a[href^="/chat/"],
+  a[href^="/cowork/"],
+  a[href^="/code/"],
+  a[href^="/project/"],
+  a[href^="/projects/"],
+  a[href^="/artifacts/"],
+  a[href^="/recents/"],
+  a[href^="/c/"],
+  a[href^="/g/"],
+  a[href^="/app/"],
+  [data-test-id="conversation"],
+  .conversation-title,
+  .conversation,
+  .cmp-item-title
+) {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  letter-spacing: -0.01em;
+}
+
+/* --- size ---------------------------------------------------------------- */
+html.cmp-size-small :is(
+  a[href^="/chat/"],
+  a[href^="/cowork/"],
+  a[href^="/code/"],
+  a[href^="/project/"],
+  a[href^="/projects/"],
+  a[href^="/artifacts/"],
+  a[href^="/chat/"],
+  a[href^="/cowork/"],
+  a[href^="/code/"],
+  a[href^="/project/"],
+  a[href^="/projects/"],
+  a[href^="/artifacts/"],
+  a[href^="/recents/"],
+  a[href^="/c/"],
+  a[href^="/g/"],
+  a[href^="/app/"],
+  [data-test-id="conversation"],
+  .conversation-title,
+  .conversation,
+  .cmp-item-title
+) {
+  font-size: 12px;
+}
+
+html.cmp-size-large :is(
+  a[href^="/chat/"],
+  a[href^="/cowork/"],
+  a[href^="/code/"],
+  a[href^="/project/"],
+  a[href^="/projects/"],
+  a[href^="/artifacts/"],
+  a[href^="/chat/"],
+  a[href^="/cowork/"],
+  a[href^="/code/"],
+  a[href^="/project/"],
+  a[href^="/projects/"],
+  a[href^="/artifacts/"],
+  a[href^="/recents/"],
+  a[href^="/c/"],
+  a[href^="/g/"],
+  a[href^="/app/"],
+  [data-test-id="conversation"],
+  .conversation-title,
+  .conversation,
+  .cmp-item-title
+) {
+  font-size: 15.5px;
+}
+
+/* --- density -------------------------------------------------------------- */
+/* On the host site the link usually is the row, so tightening it is
+   best-effort. In our own panel it is exact. */
+html.cmp-density-compact :is(
+  a[href^="/chat/"],
+  a[href^="/cowork/"],
+  a[href^="/code/"],
+  a[href^="/project/"],
+  a[href^="/projects/"],
+  a[href^="/artifacts/"],
+  a[href^="/chat/"],
+  a[href^="/cowork/"],
+  a[href^="/code/"],
+  a[href^="/project/"],
+  a[href^="/projects/"],
+  a[href^="/artifacts/"],
+  a[href^="/recents/"],
+  a[href^="/c/"],
+  a[href^="/g/"],
+  a[href^="/app/"],
+  [data-test-id="conversation"],
+  .conversation-title,
+  .conversation,
+  .cmp-item-title
+) {
+  padding-top: 2px;
+  padding-bottom: 2px;
+  line-height: 1.25;
+}
+
+html.cmp-density-compact #cmp-root .cmp-item {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+/* --- accent --------------------------------------------------------------- */
+/* Setting --cmp-accent-user also re-tints the panel, because #cmp-root reads
+   it as the fallback source for --cmp-accent. */
+html.cmp-accent-blue { --cmp-accent-user: #3b6fd4; }
+html.cmp-accent-teal { --cmp-accent-user: #2a9d8f; }
+html.cmp-accent-violet { --cmp-accent-user: #7c5cd6; }
+html.cmp-accent-amber { --cmp-accent-user: #c07d1f; }
+html.cmp-accent-rose { --cmp-accent-user: #cf5566; }
+html.cmp-accent-slate { --cmp-accent-user: #5b6b7c; }
+
+html:is(.cmp-accent-blue, .cmp-accent-teal, .cmp-accent-violet,
+        .cmp-accent-amber, .cmp-accent-rose, .cmp-accent-slate) :is(
+  a[href^="/chat/"],
+  a[href^="/cowork/"],
+  a[href^="/code/"],
+  a[href^="/project/"],
+  a[href^="/projects/"],
+  a[href^="/artifacts/"],
+  a[href^="/chat/"],
+  a[href^="/cowork/"],
+  a[href^="/code/"],
+  a[href^="/project/"],
+  a[href^="/projects/"],
+  a[href^="/artifacts/"],
+  a[href^="/recents/"],
+  a[href^="/c/"],
+  a[href^="/g/"],
+  a[href^="/app/"],
+  [data-test-id="conversation"],
+  .conversation-title,
+  .conversation,
+  .cmp-item-title
+) {
+  color: var(--cmp-accent-user);
 }
