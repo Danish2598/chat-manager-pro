@@ -12,9 +12,9 @@
   <span class="version">1.0</span>
 </header>
 
+<!-- ============================ HOME ============================ -->
 <main class="body view" data-view="home">
 
-  <!-- primary action -->
   <section class="card card-hero">
     <h1>Manage your chats</h1>
     <p>Search, sort, filter and bulk delete — with undo.</p>
@@ -22,52 +22,94 @@
       <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 4h14M3 10h9M3 16h5"/></svg>
       Open manager panel
     </button>
+    <div class="quick">
+      <button id="quick-blur" class="quick-btn" type="button">
+        <svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="6.5"/><path d="M10 3.5a6.5 6.5 0 0 1 0 13Z" fill="currentColor" stroke="none"/></svg>
+        <span id="quick-blur-label">Blur</span>
+      </button>
+      <button id="quick-lock" class="quick-btn" type="button">
+        <svg viewBox="0 0 20 20" aria-hidden="true"><rect x="4.5" y="8.5" width="11" height="8" rx="2"/><path d="M7 8.5V6a3 3 0 0 1 6 0v2.5"/></svg>
+        Lock
+      </button>
+    </div>
   </section>
 
-  <!-- sites -->
-  <h2 class="section-label">Active on</h2>
+  <h2 class="section-label">Settings</h2>
+  <section class="card">
+    <button class="row row-nav" type="button" data-goto="sites">
+      <span class="ico" aria-hidden="true"><svg viewBox="0 0 20 20"><circle cx="10" cy="10" r="7"/><path d="M3 10h14M10 3a11 11 0 0 1 0 14a11 11 0 0 1 0-14"/></svg></span>
+      <span class="row-main"><span class="row-title">Sites</span><span class="row-sub" id="st-sites">—</span></span>
+      <svg class="chev" viewBox="0 0 20 20" aria-hidden="true"><path d="m8 5 5 5-5 5"/></svg>
+    </button>
+
+    <button class="row row-nav" type="button" data-goto="privacy">
+      <span class="ico" aria-hidden="true"><svg viewBox="0 0 20 20"><circle cx="10" cy="10" r="6.5"/><path d="M10 3.5a6.5 6.5 0 0 1 0 13Z" fill="currentColor" stroke="none"/></svg></span>
+      <span class="row-main"><span class="row-title">Privacy blur</span><span class="row-sub" id="st-privacy">—</span></span>
+      <svg class="chev" viewBox="0 0 20 20" aria-hidden="true"><path d="m8 5 5 5-5 5"/></svg>
+    </button>
+
+    <button class="row row-nav" type="button" data-goto="lock">
+      <span class="ico" aria-hidden="true"><svg viewBox="0 0 20 20"><rect x="4.5" y="8.5" width="11" height="8" rx="2"/><path d="M7 8.5V6a3 3 0 0 1 6 0v2.5"/></svg></span>
+      <span class="row-main"><span class="row-title">Screen lock</span><span class="row-sub" id="st-lock">—</span></span>
+      <svg class="chev" viewBox="0 0 20 20" aria-hidden="true"><path d="m8 5 5 5-5 5"/></svg>
+    </button>
+
+    <button class="row row-nav" type="button" data-goto="appearance">
+      <span class="ico" aria-hidden="true"><svg viewBox="0 0 20 20"><path d="M4 16 10 4l6 12M6.5 12h7"/></svg></span>
+      <span class="row-main"><span class="row-title">Chat list appearance</span><span class="row-sub" id="st-appearance">—</span></span>
+      <svg class="chev" viewBox="0 0 20 20" aria-hidden="true"><path d="m8 5 5 5-5 5"/></svg>
+    </button>
+
+    <button class="row row-nav" type="button" data-goto="vision">
+      <span class="ico" aria-hidden="true"><svg viewBox="0 0 20 20"><path d="M2 10s3-5 8-5 8 5 8 5-3 5-8 5-8-5-8-5Z"/><circle cx="10" cy="10" r="2.4"/></svg></span>
+      <span class="row-main"><span class="row-title">Vision simulators</span><span class="row-sub" id="st-vision">—</span></span>
+      <svg class="chev" viewBox="0 0 20 20" aria-hidden="true"><path d="m8 5 5 5-5 5"/></svg>
+    </button>
+  </section>
+
+  <section class="card card-foot">
+    <span>Runs entirely on your device.<br /><span class="muted">No tracking, no data leaves your browser.</span></span>
+    <a class="foot-link" href="https://github.com/Danish2598/chat-manager-pro" target="_blank" rel="noopener">
+      Source <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M8 4h8v8M16 4 8.5 11.5M13 12v4H4V7h4"/></svg>
+    </a>
+  </section>
+</main>
+
+<!-- ============================ SITES ============================ -->
+<main class="body view" data-view="sites">
+  <div class="subhead">
+    <button class="back" type="button" data-back aria-label="Back"><svg viewBox="0 0 20 20"><path d="m12 5-5 5 5 5"/></svg></button>
+    <div><h1>Sites</h1><p>Turn a site off and the extension does nothing there — no panel, no blur, no shortcuts.</p></div>
+  </div>
   <section class="card">
     <label class="row">
-      <span class="ico ico-claude" aria-hidden="true">
-        <svg viewBox="0 0 20 20"><path d="M10 2.5 3 17h3l1.4-3.2h5.2L14 17h3L10 2.5Zm-1.5 8.6L10 7.6l1.5 3.5h-3Z"/></svg>
-      </span>
-      <span class="row-main"><span class="row-title">Claude</span>
-        <span class="row-sub">manage · delete · blur · lock</span></span>
+      <span class="row-main"><span class="row-title">Claude</span><span class="row-sub">manage · delete · blur · lock</span></span>
       <span class="switch"><input type="checkbox" id="s-claude" /><span class="track"><span class="knob"></span></span></span>
     </label>
-
     <label class="row">
-      <span class="ico ico-gpt" aria-hidden="true">
-        <svg viewBox="0 0 20 20"><circle cx="10" cy="10" r="6.5"/><path d="M10 3.5v13M3.5 10h13"/></svg>
-      </span>
-      <span class="row-main"><span class="row-title">ChatGPT</span>
-        <span class="row-sub">manage · delete · blur · lock</span></span>
+      <span class="row-main"><span class="row-title">ChatGPT</span><span class="row-sub">manage · delete · blur · lock</span></span>
       <span class="switch"><input type="checkbox" id="s-chatgpt" /><span class="track"><span class="knob"></span></span></span>
     </label>
-
     <label class="row">
-      <span class="ico ico-gemini" aria-hidden="true">
-        <svg viewBox="0 0 20 20"><path d="M10 2.5c.6 4 2.9 6.3 6.9 6.9-4 .6-6.3 2.9-6.9 6.9-.6-4-2.9-6.3-6.9-6.9 4-.6 6.3-2.9 6.9-6.9Z"/></svg>
-      </span>
-      <span class="row-main"><span class="row-title">Gemini <span class="pill">no bulk delete</span></span>
-        <span class="row-sub">manage · blur · lock</span></span>
+      <span class="row-main"><span class="row-title">Gemini <span class="pill">no bulk delete</span></span><span class="row-sub">manage · blur · lock</span></span>
       <span class="switch"><input type="checkbox" id="s-gemini" /><span class="track"><span class="knob"></span></span></span>
     </label>
   </section>
+  <p class="note">Gemini provides no API for deleting chats. Everything else works there.</p>
+</main>
 
-  <!-- privacy -->
-  <h2 class="section-label">Privacy</h2>
+<!-- =========================== PRIVACY =========================== -->
+<main class="body view" data-view="privacy">
+  <div class="subhead">
+    <button class="back" type="button" data-back aria-label="Back"><svg viewBox="0 0 20 20"><path d="m12 5-5 5 5 5"/></svg></button>
+    <div><h1>Privacy blur</h1><p>Hide content until you hover it. Toggle any time with <kbd>Alt</kbd><kbd>⇧</kbd><kbd>B</kbd>.</p></div>
+  </div>
   <section class="card">
     <label class="row">
-      <span class="ico ico-blur" aria-hidden="true">
-        <svg viewBox="0 0 20 20"><circle cx="10" cy="10" r="6.5"/><path d="M10 3.5a6.5 6.5 0 0 1 0 13Z" fill="currentColor" stroke="none"/></svg>
-      </span>
-      <span class="row-main"><span class="row-title">Privacy blur</span>
-        <span class="row-sub">Hide content until you hover · <kbd>Alt</kbd><kbd>⇧</kbd><kbd>B</kbd></span></span>
+      <span class="row-main"><span class="row-title">Blur is on</span><span class="row-sub">Applies to every site you have enabled</span></span>
       <span class="switch"><input type="checkbox" id="p-on" /><span class="track"><span class="knob"></span></span></span>
     </label>
-
-    <div id="p-opts" class="sub">
+    <div id="p-opts" class="sub sub-flush">
       <label class="check"><input type="checkbox" id="p-titles" /><span>Chat titles</span></label>
       <label class="check"><input type="checkbox" id="p-messages" /><span>Messages</span></label>
       <label class="check"><input type="checkbox" id="p-media" /><span>Images &amp; files</span></label>
@@ -75,134 +117,83 @@
       <label class="check"><input type="checkbox" id="p-input" /><span>Message input</span></label>
       <label class="check"><input type="checkbox" id="p-hover" /><span>Reveal on hover</span></label>
       <label class="field"><span>Strength</span>
-        <select id="p-strength">
-          <option value="light">Light</option>
-          <option value="medium">Medium</option>
-          <option value="heavy">Heavy</option>
-        </select>
+        <select id="p-strength"><option value="light">Light</option><option value="medium">Medium</option><option value="heavy">Heavy</option></select>
       </label>
     </div>
   </section>
+</main>
 
-  <!-- screen lock -->
-  <h2 class="section-label">Screen lock</h2>
+<!-- ============================ LOCK ============================ -->
+<main class="body view" data-view="lock">
+  <div class="subhead">
+    <button class="back" type="button" data-back aria-label="Back"><svg viewBox="0 0 20 20"><path d="m12 5-5 5 5 5"/></svg></button>
+    <div><h1>Screen lock</h1><p>Locks the page behind a password when you step away. <kbd>Alt</kbd><kbd>⇧</kbd><kbd>L</kbd>.</p></div>
+  </div>
   <section class="card">
-    <div class="row row-static">
-      <span class="ico ico-lock" aria-hidden="true">
-        <svg viewBox="0 0 20 20"><rect x="4.5" y="8.5" width="11" height="8" rx="2"/><path d="M7 8.5V6a3 3 0 0 1 6 0v2.5"/></svg>
-      </span>
-      <span class="row-main"><span class="row-title">Lock the page</span>
-        <span class="row-sub">When you step away · <kbd>Alt</kbd><kbd>⇧</kbd><kbd>L</kbd></span></span>
-    </div>
-
-    <div id="lock-unset" class="sub">
+    <div id="lock-unset" class="sub sub-flush">
       <input class="text" type="password" id="lock-pw" placeholder="New password" autocomplete="new-password" />
       <input class="text" type="password" id="lock-pw2" placeholder="Confirm password" autocomplete="new-password" />
       <button id="lock-save" class="btn" type="button">Set password</button>
     </div>
-
-    <div id="lock-ready" class="sub" hidden>
+    <div id="lock-ready" class="sub sub-flush" hidden>
       <button id="lock-now" class="btn" type="button">Lock now</button>
       <button id="lock-remove" class="linkbtn" type="button">Remove password</button>
     </div>
-    <p id="lock-msg" class="msg"></p>
+    <p id="lock-msg" class="msg msg-pad"></p>
   </section>
+  <p class="note">Deters someone using your unattended machine. It is not protection
+  against anyone who can disable browser extensions. Your password is never stored —
+  only a salted hash of it.</p>
+</main>
 
-  <!-- appearance -->
-  <div class="section-head">
-    <h2 class="section-label">Chat list appearance</h2>
-    <button id="t-reset" class="linkbtn linkbtn-inline" type="button">Reset</button>
+<!-- ========================= APPEARANCE ========================= -->
+<main class="body view" data-view="appearance">
+  <div class="subhead">
+    <button class="back" type="button" data-back aria-label="Back"><svg viewBox="0 0 20 20"><path d="m12 5-5 5 5 5"/></svg></button>
+    <div><h1>Chat list appearance</h1><p>Applies to chat titles in the site's sidebar and in the panel.</p></div>
   </div>
   <section class="card">
     <div class="sub sub-flush">
-      <label class="field"><span>Font</span>
-        <select id="t-font">
-          <option value="system">System</option><option value="serif">Serif</option><option value="mono">Monospace</option>
-        </select>
-      </label>
-      <label class="field"><span>Title size</span>
-        <select id="t-size">
-          <option value="small">Small</option><option value="medium">Medium</option><option value="large">Large</option>
-        </select>
-      </label>
-      <label class="field"><span>Density</span>
-        <select id="t-density">
-          <option value="comfortable">Comfortable</option><option value="compact">Compact</option>
-        </select>
-      </label>
-      <label class="field"><span>Accent</span>
-        <select id="t-accent">
-          <option value="default">Default</option><option value="blue">Blue</option>
-          <option value="teal">Teal</option><option value="violet">Violet</option>
-          <option value="amber">Amber</option><option value="rose">Rose</option>
-          <option value="slate">Slate</option>
-        </select>
-      </label>
+      <label class="field"><span>Font</span><select id="t-font"><option value="system">System</option><option value="serif">Serif</option><option value="mono">Monospace</option></select></label>
+      <label class="field"><span>Title size</span><select id="t-size"><option value="small">Small</option><option value="medium">Medium</option><option value="large">Large</option></select></label>
+      <label class="field"><span>Density</span><select id="t-density"><option value="comfortable">Comfortable</option><option value="compact">Compact</option></select></label>
+      <label class="field"><span>Accent</span><select id="t-accent">
+        <option value="default">Default</option><option value="blue">Blue</option><option value="teal">Teal</option>
+        <option value="violet">Violet</option><option value="amber">Amber</option><option value="rose">Rose</option><option value="slate">Slate</option>
+      </select></label>
       <p id="t-msg" class="msg"></p>
     </div>
   </section>
-
-
-  <!-- simulators -->
-  <h2 class="section-label">Vision simulators</h2>
-  <section class="card">
-    <button class="row row-nav" type="button" data-goto="colorblind">
-      <span class="ico" aria-hidden="true">
-        <svg viewBox="0 0 20 20"><circle cx="10" cy="10" r="6.5"/><path d="M10 3.5a6.5 6.5 0 0 1 0 13Z" fill="currentColor" stroke="none"/></svg>
-      </span>
-      <span class="row-main"><span class="row-title">Colour blindness</span>
-        <span class="row-sub" id="cb-state">Off</span></span>
-      <svg class="chev" viewBox="0 0 20 20" aria-hidden="true"><path d="m8 5 5 5-5 5"/></svg>
-    </button>
-  </section>
-
-  <!-- footer -->
-  <section class="card card-foot">
-    <span>Runs entirely on your device.<br /><span class="muted">No tracking, no data leaves your browser.</span></span>
-    <a class="foot-link" href="https://github.com/Danish2598/chat-manager-pro" target="_blank" rel="noopener">
-      Source <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M8 4h8v8M16 4 8.5 11.5M13 12v4H4V7h4"/></svg>
-    </a>
-  </section>
-
+  <button id="t-reset" class="linkbtn" type="button">Reset appearance</button>
+  <p class="note">Reset restores the look only. Your sites, blur settings and lock password are untouched.</p>
 </main>
 
-
-<main class="body view" data-view="colorblind">
+<!-- =========================== VISION =========================== -->
+<main class="body view" data-view="vision">
   <div class="subhead">
-    <button class="back" type="button" data-back aria-label="Back">
-      <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m12 5-5 5 5 5"/></svg>
-    </button>
-    <div>
-      <h1>Colour blindness</h1>
-      <p>Simulate how this page looks to someone with colour vision deficiency.</p>
-    </div>
+    <button class="back" type="button" data-back aria-label="Back"><svg viewBox="0 0 20 20"><path d="m12 5-5 5 5 5"/></svg></button>
+    <div><h1>Colour blindness</h1><p>Simulate how this page looks to someone with colour vision deficiency.</p></div>
   </div>
-
   <section class="card">
     <label class="row">
-      <span class="row-main"><span class="row-title">Protanopia</span>
-        <span class="row-sub">Red-blind colour vision</span></span>
+      <span class="row-main"><span class="row-title">Protanopia</span><span class="row-sub">Red-blind colour vision</span></span>
       <span class="switch"><input type="radio" name="cmp-cb" id="cb-protanopia" value="protanopia" data-cb="protanopia" /><span class="track"><span class="knob"></span></span></span>
     </label>
     <label class="row">
-      <span class="row-main"><span class="row-title">Deuteranopia</span>
-        <span class="row-sub">Green-blind colour vision</span></span>
+      <span class="row-main"><span class="row-title">Deuteranopia</span><span class="row-sub">Green-blind colour vision</span></span>
       <span class="switch"><input type="radio" name="cmp-cb" id="cb-deuteranopia" value="deuteranopia" data-cb="deuteranopia" /><span class="track"><span class="knob"></span></span></span>
     </label>
     <label class="row">
-      <span class="row-main"><span class="row-title">Tritanopia</span>
-        <span class="row-sub">Blue-blind colour vision</span></span>
+      <span class="row-main"><span class="row-title">Tritanopia</span><span class="row-sub">Blue-blind colour vision</span></span>
       <span class="switch"><input type="radio" name="cmp-cb" id="cb-tritanopia" value="tritanopia" data-cb="tritanopia" /><span class="track"><span class="knob"></span></span></span>
     </label>
     <label class="row">
-      <span class="row-main"><span class="row-title">Achromatopsia</span>
-        <span class="row-sub">Full colour blindness (greyscale)</span></span>
+      <span class="row-main"><span class="row-title">Achromatopsia</span><span class="row-sub">Full colour blindness (greyscale)</span></span>
       <span class="switch"><input type="radio" name="cmp-cb" id="cb-achromatopsia" value="achromatopsia" data-cb="achromatopsia" /><span class="track"><span class="knob"></span></span></span>
     </label>
   </section>
-
-  <p class="note">One at a time — turning one on switches the others off.
-  Affects only the page you are viewing, never what you send.</p>
+  <p class="note">One at a time — turning one on switches the others off. Click the
+  active one to turn it off. Affects only what you see, never what you send.</p>
 </main>
 
 <script src="lock-crypto.js"></script>

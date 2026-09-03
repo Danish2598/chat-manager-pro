@@ -243,6 +243,19 @@ the extension instead of breaking it. Every endpoint and selector lives in the
 
 ---
 
+## The popup
+
+One short home screen with a summary row per setting group, each opening its own
+screen. Every row states its current value — "2 of 3 active", "On · 4 of 5
+targets · medium", "Rose · Serif" — so drilling down never hides what is
+switched on.
+
+Two quick actions sit in the hero card, because they are the ones worth doing
+without navigating: toggle blur, and lock now. Everything else is one tap in.
+
+Adding a screen is a `data-goto` row plus a `<main class="body view">` block,
+and a line in the view-router rule in `popup.css`.
+
 ## Permissions
 
 `storage` — and nothing else.

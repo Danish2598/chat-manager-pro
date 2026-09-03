@@ -307,7 +307,11 @@ body {
 /* ---------- view router ---------- */
 .view { display: none; }
 body[data-view="home"]       .view[data-view="home"],
-body[data-view="colorblind"] .view[data-view="colorblind"] { display: block; }
+body[data-view="sites"]      .view[data-view="sites"],
+body[data-view="privacy"]    .view[data-view="privacy"],
+body[data-view="lock"]       .view[data-view="lock"],
+body[data-view="appearance"] .view[data-view="appearance"],
+body[data-view="vision"]     .view[data-view="vision"] { display: block; }
 
 .subhead {
   display: flex;
@@ -360,3 +364,28 @@ body[data-view="colorblind"] .view[data-view="colorblind"] { display: block; }
   line-height: 1.5;
   color: var(--muted);
 }
+
+/* ---------- quick actions in the hero ---------- */
+.quick { display: flex; gap: 8px; margin-top: 9px; }
+.quick-btn {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  background: var(--canvas);
+  color: var(--dim);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 550;
+  cursor: pointer;
+}
+.quick-btn:hover:not(:disabled) { background: var(--accent-soft); color: var(--accent); border-color: var(--accent-soft); }
+.quick-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+.quick-btn svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.quick-btn.quick-on { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+.msg-pad { padding: 0 13px 12px; margin: 0; }

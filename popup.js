@@ -54,6 +54,7 @@ function saveSites() {
   const sites = {};
   Object.entries(S).forEach(([id, node]) => { sites[id] = node.checked; });
   chrome.storage.local.set({ [SITES_KEY]: sites });
+  refreshHome();
 }
 
 Object.values(S).forEach((node) => node.addEventListener('change', saveSites));
@@ -79,6 +80,7 @@ function saveTheme() {
   chrome.storage.local.set({ [THEME_KEY]: value });
   applyAccent(value.accent);
   themeMsg.textContent = '';
+  refreshHome();
 }
 
 Object.values(T).forEach((node) => node.addEventListener('change', saveTheme));
@@ -103,6 +105,7 @@ const lockPw2 = $('lock-pw2');
 function showLockState(hasPassword) {
   lockUnset.hidden = hasPassword;
   lockReady.hidden = !hasPassword;
+  if (typeof refreshHome === 'function') refreshHome();
 }
 
 function say(text, isError) {
@@ -145,6 +148,7 @@ function savePrivacy() {
   });
   chrome.storage.local.set({ [PRIVACY_KEY]: privacy });
   reflectEnabled();
+  refreshHome();
 }
 
 /** Dim the sub-options when the master switch is off. */
@@ -158,14 +162,60 @@ Object.values(P).forEach((node) => node.addEventListener('change', savePrivacy))
 document.querySelectorAll('[data-goto]').forEach((el) =>
   el.addEventListener('click', () => { document.body.dataset.view = el.dataset.goto; }));
 document.querySelectorAll('[data-back]').forEach((el) =>
-  el.addEventListener('click', () => { document.body.dataset.view = 'home'; }));
+  el.addEventListener('click', () => {
+    document.body.dataset.view = 'home';
+    refreshHome();
+  }));
+
+/* ---------- home summary ---------- */
+// Each home row states its own current setting, so the drill-down never hides
+// what is switched on.
+const ST = {
+  sites: $('st-sites'),
+  privacy: $('st-privacy'),
+  lock: $('st-lock'),
+  appearance: $('st-appearance'),
+};
+
+function refreshHome() {
+  const onSites = Object.values(S).filter((n) => n.checked).length;
+  ST.sites.textContent = `${onSites} of ${Object.keys(S).length} active`;
+
+  const targets = ['titles', 'messages', 'media', 'account', 'input']
+    .filter((k) => P[k].checked).length;
+  ST.privacy.textContent = P.on.checked
+    ? `On · ${targets} of 5 targets · ${P.strength.value}`
+    : 'Off';
+  $('quick-blur-label').textContent = P.on.checked ? 'Blur on' : 'Blur';
+  $('quick-blur').classList.toggle('quick-on', P.on.checked);
+
+  ST.lock.textContent = $('lock-ready').hidden ? 'No password set' : 'Password set';
+  $('quick-lock').disabled = $('lock-ready').hidden;
+
+  const parts = [];
+  if (T.accent.value !== 'default') parts.push(T.accent.selectedOptions[0].textContent);
+  if (T.font.value !== 'system') parts.push(T.font.selectedOptions[0].textContent);
+  if (T.size.value !== 'medium') parts.push(T.size.selectedOptions[0].textContent);
+  if (T.density.value !== 'comfortable') parts.push(T.density.selectedOptions[0].textContent);
+  ST.appearance.textContent = parts.length ? parts.join(' · ') : 'Default';
+}
+
+/* ---------- quick actions ---------- */
+// The two things worth doing without drilling in.
+$('quick-blur').addEventListener('click', () => {
+  P.on.checked = !P.on.checked;
+  savePrivacy();
+});
+$('quick-lock').addEventListener('click', () => {
+  chrome.storage.local.set({ [LOCK_SIGNAL]: Date.now() }, () => window.close());
+});
 
 /* ---------- colour blindness ---------- */
 // One radio group, so the browser guarantees a single active simulation even
 // if this script never runs. The handler only adds what radios cannot do on
 // their own: clicking the active one turns it back off.
 const CB = [...document.querySelectorAll('[data-cb]')];
-const cbState = $('cb-state');
+const cbState = $('st-vision');
 let cbCurrent = 'none';
 
 function showVision(mode) {
@@ -209,4 +259,5 @@ chrome.storage.local.get([PRIVACY_KEY, LOCK_KEY, SITES_KEY, THEME_KEY, VISION_KE
     else node.value = privacy[key];
   });
   reflectEnabled();
+  refreshHome();
 });
