@@ -1,4 +1,21 @@
 ════════════════════════════════════════════════════════════════════════
+0. TWO TRAPS ON THIS PAGE
+════════════════════════════════════════════════════════════════════════
+* "Verified CRX uploads -> Opt in" on the Package tab: DO NOT OPT IN.
+  It requires every future update to be signed with a private key you hold.
+  Lose the key and the item can no longer be updated without going through
+  Chrome Web Store support. It exists for enterprises with signing
+  infrastructure. Cancel the dialog.
+
+* "Are you using remote code?" defaults to YES. Change it to NO. The package
+  contains no eval, no new Function, no external script references, no CDN
+  and no external modules, so "No" is the accurate answer. Answering yes
+  invites a slower, more sceptical review for a claim that is not true.
+
+* The data usage checkboxes mean "I DO collect this". Collecting nothing
+  means leaving all nine EMPTY, then ticking the three certifications.
+
+════════════════════════════════════════════════════════════════════════
 1. SINGLE PURPOSE  (field: "Single purpose description")
 ════════════════════════════════════════════════════════════════════════
 Chat Manager Pro has one purpose: helping users manage their own conversation
@@ -53,15 +70,17 @@ bundler or minifier. The source published to the store is the source that runs.
 ════════════════════════════════════════════════════════════════════════
 5. DATA USAGE  (answer every question, then tick all three boxes)
 ════════════════════════════════════════════════════════════════════════
-Personally identifiable information ......... NOT collected
-Health information .......................... NOT collected
-Financial and payment information ........... NOT collected
-Authentication information .................. NOT collected
-Personal communications ..................... NOT collected
-Location .................................... NOT collected
-Web history ................................. NOT collected
-User activity ............................... NOT collected
-Website content ............................. NOT collected
+Leave every box UNCHECKED. A ticked box means you collect that category.
+
+Personally identifiable information ......... leave unchecked
+Health information .......................... leave unchecked
+Financial and payment information ........... leave unchecked
+Authentication information .................. leave unchecked
+Personal communications ..................... leave unchecked
+Location .................................... leave unchecked
+Web history ................................. leave unchecked
+User activity ............................... leave unchecked
+Website content ............................. leave unchecked
 
 Then tick all three certifications:
   [x] I do not sell or transfer user data to third parties, outside of the
