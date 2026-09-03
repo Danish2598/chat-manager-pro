@@ -231,16 +231,10 @@ appearance screen.
 - [x] Screenshots generated (`python3 tools_screenshots.py --render`) — no real chat titles in them
 - [ ] Publisher contact email added **and verified** — publishing is blocked
       without it (Settings → Profile → Add email)
-- [ ] Trader / non-trader status decided deliberately
+- [x] Trader status: **non-trader** — free extension, no monetization, and it
+      keeps the publisher's address off the public listing. Revisit if a paid
+      tier is ever added.
 
-      A trader declaration publishes the name, physical address and phone
-      number from the linked Google payments profile on the public listing,
-      because EEA consumer law requires a trader's contact details to be
-      visible. For a free extension run as a hobby that is often not intended
-      and not easily undone once the listing is indexed. Non-trader avoids the
-      disclosure. Which one applies is a legal question about whether the
-      distribution is in the course of a business — read Google's "Learn more"
-      link before choosing.
 - [ ] Tested on a clean Chrome profile, installed unpacked, from a cold load
 - [x] Bulk delete executed successfully on **Claude**
 - [ ] Bulk delete executed successfully on **ChatGPT** — a separate mechanism, see below
