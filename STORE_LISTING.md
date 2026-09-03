@@ -194,6 +194,17 @@ are a permanent, public data leak.
 
 ---
 
+## Building the upload
+
+```bash
+python3 tools_package.py
+```
+
+Writes `dist/chat-manager-pro-<version>.zip` containing only the 13 files the
+extension actually runs. Development files — generators, the console
+diagnostic, the test plan, this document, the hosted privacy policy — stay in
+the repo. They add nothing at runtime and only widen what a reviewer reads.
+
 ## Pre-submission checklist
 
 - [ ] `manifest.json` name and description match this file
@@ -205,6 +216,23 @@ are a permanent, public data leak.
 - [ ] Screenshots taken on a throwaway account
 - [ ] Trader / non-trader status answered (required for EU distribution)
 - [ ] Tested on a clean Chrome profile, installed unpacked, from a cold load
+- [ ] **Bulk delete executed successfully at least once on a throwaway chat, on
+      each site that advertises it (Claude and ChatGPT)** — see the note below
+- [ ] `tools_verify.js` run on Claude, ChatGPT and Gemini with no FAIL lines
+
+### Why bulk delete blocks the submission
+
+It is the headline feature, it is irreversible, and it is the one thing that has
+never been executed. The listing promises it on two sites whose endpoints were
+written defensively against shapes that were never confirmed.
+
+If the delete call is wrong, the failure is not cosmetic. Either nothing is
+deleted — and the store listing is then a false claim, which is a removal
+reason — or the wrong request succeeds against real accounts. Neither is
+recoverable after publication, and an extension cannot be un-shipped from the
+people who already installed it.
+
+One throwaway chat on each site settles it in two minutes.
 
 ## After publishing
 
