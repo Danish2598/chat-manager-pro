@@ -1,0 +1,317 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Privacy Policy — Chat Manager Pro</title>
+<meta name="description" content="Privacy policy for the Chat Manager Pro Chrome extension. No data is collected, and nothing leaves your browser." />
+<style>
+  :root {
+    --bg: #ffffff;
+    --surface: #f7f7f5;
+    --border: #e4e3de;
+    --text: #1c1b19;
+    --dim: #66645d;
+    --accent: #3b6fd4;
+    --ok: #2f7d55;
+    --warn-bg: #fdf6e3;
+    --warn-border: #e8d9a8;
+    --warn-text: #6b5518;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #1b1a16;
+      --surface: #242320;
+      --border: #38362e;
+      --text: #edece4;
+      --dim: #a09d93;
+      --accent: #86a8ee;
+      --ok: #6fbf8f;
+      --warn-bg: #2b2717;
+      --warn-border: #4b432a;
+      --warn-text: #ddc98c;
+    }
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    font-size: 16px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap { max-width: 720px; margin: 0 auto; padding: 56px 24px 80px; }
+
+  header { border-bottom: 1px solid var(--border); padding-bottom: 24px; margin-bottom: 8px; }
+  h1 { font-size: 28px; line-height: 1.25; margin: 0 0 6px; letter-spacing: -0.01em; }
+  .product { font-size: 15px; color: var(--dim); margin: 0 0 14px; }
+  .dates { font-size: 13.5px; color: var(--dim); margin: 0; }
+
+  h2 {
+    font-size: 18px;
+    margin: 40px 0 12px;
+    padding-top: 4px;
+    letter-spacing: -0.005em;
+  }
+  h3 { font-size: 15px; margin: 24px 0 8px; }
+  p { margin: 0 0 14px; }
+  ul { margin: 0 0 14px; padding-left: 22px; }
+  li { margin-bottom: 7px; }
+  a { color: var(--accent); }
+  strong { font-weight: 600; }
+
+  code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.88em;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1px 5px;
+  }
+
+  .lede {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--ok);
+    border-radius: 8px;
+    padding: 18px 20px;
+    margin: 28px 0 8px;
+  }
+  .lede p { margin: 0; font-size: 16.5px; }
+  .lede p + p { margin-top: 10px; }
+
+  .note {
+    background: var(--warn-bg);
+    border: 1px solid var(--warn-border);
+    color: var(--warn-text);
+    border-radius: 8px;
+    padding: 16px 18px;
+    margin: 18px 0;
+    font-size: 14.5px;
+  }
+  .note p { margin: 0; }
+  .note p + p { margin-top: 9px; }
+
+  .table-scroll { overflow-x: auto; margin: 0 0 16px; }
+  table { border-collapse: collapse; width: 100%; font-size: 14.5px; }
+  th, td {
+    text-align: left;
+    padding: 9px 12px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  th { font-weight: 600; font-size: 13px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--dim); }
+  td:first-child { white-space: nowrap; }
+  .no { color: var(--ok); font-weight: 600; }
+
+  footer {
+    margin-top: 52px;
+    padding-top: 22px;
+    border-top: 1px solid var(--border);
+    font-size: 13px;
+    color: var(--dim);
+  }
+  footer p { margin: 0 0 8px; }
+
+  @media (max-width: 560px) {
+    .wrap { padding: 36px 18px 60px; }
+    h1 { font-size: 24px; }
+    td:first-child { white-space: normal; }
+  }
+
+  @media print {
+    body { background: #fff; color: #000; font-size: 11pt; }
+    .wrap { max-width: none; padding: 0; }
+    .lede, .note { border: 1px solid #999; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <h1>Privacy Policy</h1>
+    <p class="product">Chat Manager Pro — Chrome extension</p>
+    <p class="dates">Effective 1 September 2026 · Last updated 1 September 2026</p>
+  </header>
+
+  <div class="lede">
+    <p><strong>Chat Manager Pro collects nothing, transmits nothing, and has no servers.</strong></p>
+    <p>There is no account, no sign-up, no analytics, no telemetry, no crash
+    reporting and no advertising. The extension has no backend for your data to
+    be sent to, because it does not have a backend at all.</p>
+  </div>
+
+  <h2>1. Single purpose</h2>
+
+  <p>Chat Manager Pro has one purpose: helping you manage your own conversation
+  list on Claude.ai. Searching, sorting, filtering, selecting, bulk deleting, and
+  visually shielding that list from onlookers all serve that single purpose. The
+  extension does nothing outside it.</p>
+
+  <h2>2. What is stored</h2>
+
+  <p>Your own settings, held in <code>chrome.storage.local</code> on your own
+  device. That is the complete list:</p>
+
+  <div class="table-scroll">
+    <table>
+      <thead>
+        <tr><th>Stored value</th><th>What it is</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Sort order</td><td>Newest, oldest, A–Z or Z–A</td></tr>
+        <tr><td>Date filter</td><td>All, today, this week, this month or older</td></tr>
+        <tr><td>Privacy blur settings</td><td>Whether blur is on, which elements it covers, blur strength, hover-reveal on or off</td></tr>
+        <tr><td>Lock state</td><td>Whether the screen is currently locked</td></tr>
+        <tr><td>Lock password hash</td><td>Only if you choose to set a screen-lock password — see section 6</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>No conversation titles, no message contents, no account details and no
+  identifiers of any kind are ever written to storage. Uninstalling the
+  extension removes everything above.</p>
+
+  <h2>3. What is read, and when</h2>
+
+  <p>While you are signed in to Claude.ai and the extension's panel is open, it
+  reads your conversation list — titles and timestamps — so it can display,
+  search, sort, filter and delete them. This happens inside your browser, using
+  the session you are already signed in to.</p>
+
+  <p>That list is held in memory only. It is discarded when you close or reload
+  the tab. It is never written to disk and never sent anywhere.</p>
+
+  <h3>The privacy blur reads nothing at all</h3>
+
+  <p>The blur is implemented entirely in CSS. The extension switches styling on,
+  and your browser does the blurring. Message contents are never read, copied,
+  inspected or processed by this extension in order to blur them.</p>
+
+  <h2>4. What is transmitted</h2>
+
+  <p><strong>Nothing, to anyone.</strong> The extension makes no requests to any
+  third-party server, and there is no third party to receive them.</p>
+
+  <p>The only network requests it makes are to Claude.ai itself, on your behalf,
+  to list and delete your own conversations. These are the same actions you can
+  perform by hand in the interface, carried out with your existing session. Your
+  use of Claude.ai remains governed by Anthropic's own privacy policy, which is
+  separate from this one.</p>
+
+  <div class="table-scroll">
+    <table>
+      <thead>
+        <tr><th>Practice</th><th>Applies?</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Collects personal information</td><td class="no">No</td></tr>
+        <tr><td>Collects message or conversation content</td><td class="no">No</td></tr>
+        <tr><td>Collects authentication details</td><td class="no">No</td></tr>
+        <tr><td>Tracks browsing or web history</td><td class="no">No</td></tr>
+        <tr><td>Uses analytics or telemetry</td><td class="no">No</td></tr>
+        <tr><td>Sells or shares data with third parties</td><td class="no">No</td></tr>
+        <tr><td>Serves advertising</td><td class="no">No</td></tr>
+        <tr><td>Executes remote code</td><td class="no">No</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>5. Permissions</h2>
+
+  <p>The extension requests <strong>one</strong> permission:</p>
+
+  <ul>
+    <li><code>storage</code> — used solely to save the settings listed in
+    section 1.</li>
+  </ul>
+
+  <p>It requests <strong>no host permissions</strong>, no
+  <code>activeTab</code>, and no <code>scripting</code> permission. The content
+  script is injected declaratively by the manifest's <code>matches</code>
+  pattern, and the toolbar popup communicates with it through
+  <code>chrome.storage.onChanged</code> rather than tab messaging — which is what
+  removes the need for any further permission. It contains no remote code: no
+  <code>eval</code>, no injected script tags, no external libraries. The source
+  that is published is the source that runs.</p>
+
+  <h2>6. The screen lock</h2>
+
+  <p>If you choose to set a screen-lock password, <strong>the password itself is
+  never stored.</strong> What is stored is a PBKDF2-SHA256 derivation of it
+  (150,000 iterations) together with a random 16-byte salt. Unlocking compares
+  derivations. Your password cannot be recovered from what is kept — not by this
+  extension, and not by its developer.</p>
+
+  <p>All of this stays on your device. Nothing about the lock is transmitted.</p>
+
+  <div class="note">
+    <p><strong>What the screen lock is, honestly.</strong> It deters someone who
+    walks up to your unattended machine from reading or using your chats. It is
+    <em>not</em> a security boundary: anyone able to disable extensions in the
+    browser can bypass it.</p>
+    <p>Please do not rely on it to protect anything that would genuinely harm you
+    if exposed. It is stated the same way in the extension's documentation, so
+    that nobody mistakes it for more than it offers.</p>
+  </div>
+
+  <h2>7. The optional backup file</h2>
+
+  <p>Before deleting chats, you may tick a box to download a JSON backup. That
+  file is written by your browser to your own downloads folder and is never
+  uploaded anywhere.</p>
+
+  <p>It records conversation titles, identifiers and timestamps only. It does
+  <strong>not</strong> contain message contents, and it cannot restore a deleted
+  conversation — it is a record of what was removed, not a copy of it.</p>
+
+  <h2>8. Deletion is permanent</h2>
+
+  <p>Deletions you confirm in the extension are carried out against your own
+  Claude.ai account and cannot be undone once they have run. The extension
+  provides a confirmation listing every title, an optional backup, and a
+  ten-second window during which you can cancel — but once deletion begins, the
+  conversations are gone.</p>
+
+  <h2>9. Open source and transparency</h2>
+
+  <p>This extension is open source under the MIT licence. The complete source is
+  public at <a href="https://github.com/Danish2598/chat-manager-pro">https://github.com/Danish2598/chat-manager-pro</a>, and it is published unminified and
+  unbundled — the code you can read there is exactly the code that runs in your
+  browser. Every claim on this page can be checked against it rather than taken
+  on trust.</p>
+
+  <h2>10. Children</h2>
+
+  <p>This extension is a utility for managing your own chat list. It is not
+  directed at children, and it collects no information from anyone, including
+  children.</p>
+
+  <h2>11. Changes to this policy</h2>
+
+  <p>If this policy changes, the "last updated" date at the top will change with
+  it, and the revised policy will be published at this address. Material changes
+  to what the extension does with your data would also be described in the
+  extension's release notes.</p>
+
+  <h2>12. Contact</h2>
+
+  <p>Questions about this policy can be raised as an issue at
+  <a href="https://github.com/Danish2598/chat-manager-pro/issues">https://github.com/Danish2598/chat-manager-pro/issues</a>, or through the extension's Chrome
+  Web Store support tab.</p>
+
+  <footer>
+    <p>Claude is a trademark of Anthropic PBC. This extension is an independent
+    project with no relationship to Anthropic.</p>
+    <p>Published by Danish2598. Source: <a href="https://github.com/Danish2598/chat-manager-pro">https://github.com/Danish2598/chat-manager-pro</a></p>
+  </footer>
+
+</div>
+</body>
+</html>

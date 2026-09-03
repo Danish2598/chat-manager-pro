@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Chat Manager Pro</title>
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+  <header class="head">
+    <h1>Chat Manager Pro</h1>
+  </header>
+
+  <main class="body">
+    <button id="open" class="primary" type="button">Open manager panel</button>
+    <p class="hint">
+      Opens on your Claude tab. You can also use the round ☑ button at the
+      bottom-right of the page.
+    </p>
+
+    <section class="block">
+      <div class="block-head">
+        <h2>Privacy blur</h2>
+        <label class="switch">
+          <input type="checkbox" id="p-on" />
+          <span class="track"><span class="knob"></span></span>
+        </label>
+      </div>
+      <p class="hint hint-tight">
+        Hides content until you hover it. Toggle any time with
+        <kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>B</kbd>.
+      </p>
+
+      <div id="p-opts" class="opts">
+        <label class="check"><input type="checkbox" id="p-titles" /><span>Chat titles</span></label>
+        <label class="check"><input type="checkbox" id="p-messages" /><span>Messages</span></label>
+        <label class="check"><input type="checkbox" id="p-media" /><span>Images &amp; files</span></label>
+        <label class="check"><input type="checkbox" id="p-account" /><span>Account details</span></label>
+        <label class="check"><input type="checkbox" id="p-input" /><span>Message input</span></label>
+        <label class="check"><input type="checkbox" id="p-hover" /><span>Reveal on hover</span></label>
+
+        <label class="field">
+          <span>Strength</span>
+          <select id="p-strength">
+            <option value="light">Light</option>
+            <option value="medium">Medium</option>
+            <option value="heavy">Heavy</option>
+          </select>
+        </label>
+      </div>
+    </section>
+
+    <section class="block">
+      <h2>Screen lock</h2>
+
+      <div id="lock-unset">
+        <p class="hint hint-tight">
+          Blurs and locks the page when you step away.
+        </p>
+        <input class="text" type="password" id="lock-pw" placeholder="New password" autocomplete="new-password" />
+        <input class="text" type="password" id="lock-pw2" placeholder="Confirm password" autocomplete="new-password" />
+        <button id="lock-save" class="primary" type="button">Set password</button>
+      </div>
+
+      <div id="lock-ready" hidden>
+        <p class="hint hint-tight">
+          Password set. Lock with <kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>L</kbd>
+          or the 🔒 button in the panel.
+        </p>
+        <button id="lock-now" class="primary" type="button">Lock now</button>
+        <button id="lock-remove" class="linkbtn" type="button">Remove password</button>
+      </div>
+
+      <p id="lock-msg" class="msg"></p>
+    </section>
+
+    <section class="block">
+      <h2>List defaults</h2>
+      <label class="field">
+        <span>Sort</span>
+        <select id="sort">
+          <option value="newest">Newest first</option>
+          <option value="oldest">Oldest first</option>
+          <option value="az">A–Z</option>
+          <option value="za">Z–A</option>
+        </select>
+      </label>
+      <label class="field">
+        <span>Filter</span>
+        <select id="filter">
+          <option value="all">All</option>
+          <option value="today">Today</option>
+          <option value="week">This week</option>
+          <option value="month">This month</option>
+          <option value="older">Older</option>
+        </select>
+      </label>
+    </section>
+
+    <p class="privacy">
+      Runs entirely on your device. No accounts, no tracking, no data leaves
+      your browser.
+    </p>
+  </main>
+
+  <script src="lock-crypto.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>

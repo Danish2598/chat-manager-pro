@@ -1,0 +1,173 @@
+:root {
+  --bg: #ffffff;
+  --soft: #f6f6f4;
+  --border: #e3e2dd;
+  --text: #1f1e1c;
+  --dim: #6f6d66;
+  --accent: #3b6fd4;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #26251f;
+    --soft: #1e1d18;
+    --border: #3b392f;
+    --text: #efeee6;
+    --dim: #a3a096;
+    --accent: #7fa4ec;
+  }
+}
+
+* { box-sizing: border-box; }
+
+body {
+  width: 280px;
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.head { padding: 14px 16px 10px; border-bottom: 1px solid var(--border); }
+.head h1 { margin: 0; font-size: 14px; font-weight: 600; }
+
+.body { padding: 14px 16px 16px; }
+
+.primary {
+  width: 100%;
+  padding: 9px 12px;
+  border: none;
+  border-radius: 8px;
+  background: var(--accent);
+  color: #fff;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+}
+.primary:hover { filter: brightness(1.07); }
+
+.hint { margin: 9px 0 0; font-size: 11.5px; color: var(--dim); }
+
+.prefs { margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--border); }
+.prefs h2 {
+  margin: 0 0 10px;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--dim);
+  font-weight: 600;
+}
+
+.field { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 9px; }
+.field span { font-size: 12.5px; }
+.field select {
+  flex: 1;
+  max-width: 150px;
+  padding: 5px 7px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--soft);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 12.5px;
+  cursor: pointer;
+}
+
+.privacy {
+  margin: 16px 0 0;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+  font-size: 11px;
+  color: var(--dim);
+}
+
+/* ---------- sections ---------- */
+.block { margin-top: 16px; padding-top: 13px; border-top: 1px solid var(--border); }
+.block h2 {
+  margin: 0 0 9px;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--dim);
+  font-weight: 600;
+}
+.block-head { display: flex; align-items: center; justify-content: space-between; }
+.block-head h2 { margin: 0; }
+.hint-tight { margin: 6px 0 10px; }
+
+kbd {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 10px;
+  padding: 1px 4px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--soft);
+}
+
+/* ---------- master switch ---------- */
+.switch { position: relative; display: inline-flex; cursor: pointer; }
+.switch input { position: absolute; opacity: 0; width: 0; height: 0; }
+.track {
+  width: 34px;
+  height: 20px;
+  border-radius: 999px;
+  background: var(--border);
+  transition: background 0.15s ease;
+  display: block;
+}
+.knob {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--bg);
+  transition: transform 0.15s ease;
+}
+.switch input:checked + .track { background: var(--accent); }
+.switch input:checked + .track .knob { transform: translateX(14px); }
+.switch input:focus-visible + .track { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* ---------- sub-options ---------- */
+.opts { transition: opacity 0.15s ease; }
+.opts.disabled { opacity: 0.45; pointer-events: none; }
+
+.check { display: flex; align-items: center; gap: 8px; margin-bottom: 7px; cursor: pointer; font-size: 12.5px; }
+.check input { accent-color: var(--accent); margin: 0; width: 14px; height: 14px; }
+
+/* ---------- screen lock ---------- */
+.text {
+  width: 100%;
+  padding: 7px 9px;
+  margin-bottom: 7px;
+  border-radius: 7px;
+  border: 1px solid var(--border);
+  background: var(--soft);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 12.5px;
+}
+.text:focus { outline: none; border-color: var(--accent); }
+
+.linkbtn {
+  display: block;
+  width: 100%;
+  margin-top: 7px;
+  padding: 4px;
+  border: none;
+  background: none;
+  color: var(--dim);
+  font-family: inherit;
+  font-size: 11.5px;
+  text-decoration: underline;
+  cursor: pointer;
+}
+.linkbtn:hover { color: var(--text); }
+
+.msg { margin: 8px 0 0; font-size: 11.5px; color: var(--dim); min-height: 14px; }
+.msg-error { color: #c8443a; }
+@media (prefers-color-scheme: dark) { .msg-error { color: #e0655a; } }

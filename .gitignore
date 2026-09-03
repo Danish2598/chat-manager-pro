@@ -1,0 +1,13 @@
+# macOS
+.DS_Store
+
+# Build / packaging output
+*.zip
+dist/
+
+# Local scratch — the popup preview built during testing
+_preview.html
+
+# Editor
+.vscode/
+.idea/

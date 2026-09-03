@@ -1,0 +1,50 @@
+{
+  "manifest_version": 3,
+  "name": "Chat Manager Pro \u2013 Bulk Delete & Privacy for Claude",
+  "version": "1.0.0",
+  "description": "Bulk delete, search, sort and filter your Claude.ai chats. Blur them for privacy in public, and lock your screen when away.",
+  "permissions": [
+    "storage"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Chat Manager Pro"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://claude.ai/*"
+      ],
+      "js": [
+        "lock-crypto.js",
+        "content.js"
+      ],
+      "css": [
+        "content.css"
+      ],
+      "run_at": "document_start"
+    }
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "icons": {
+    "16": "icons/icon-16.png",
+    "48": "icons/icon-48.png",
+    "128": "icons/icon-128.png"
+  },
+  "commands": {
+    "toggle-privacy": {
+      "suggested_key": {
+        "default": "Alt+Shift+B"
+      },
+      "description": "Toggle privacy blur"
+    },
+    "toggle-lock": {
+      "suggested_key": {
+        "default": "Alt+Shift+L"
+      },
+      "description": "Lock the screen"
+    }
+  }
+}
