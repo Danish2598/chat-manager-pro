@@ -1,0 +1,81 @@
+════════════════════════════════════════════════════════════════════════
+1. SINGLE PURPOSE  (field: "Single purpose description")
+════════════════════════════════════════════════════════════════════════
+Chat Manager Pro has one purpose: helping users manage their own conversation
+list on the AI chat sites they already use. Searching that list, sorting and
+filtering it, selecting conversations, deleting them in bulk, and visually
+shielding the list from people nearby all serve that single purpose. The
+extension does nothing outside it.
+
+════════════════════════════════════════════════════════════════════════
+2. HOST PERMISSION JUSTIFICATION
+   (content_scripts matches: claude.ai, chatgpt.com, chat.openai.com,
+    gemini.google.com)
+════════════════════════════════════════════════════════════════════════
+The extension manages the user's conversation list on the chat sites they are
+signed in to, so it has to run on those sites. Content scripts are declared for
+exactly the four hosts whose chat lists it manages: claude.ai, chatgpt.com,
+chat.openai.com and gemini.google.com.
+
+On those pages it reads the user's own conversation list so it can display,
+search, sort and filter it, and it issues delete requests to that same site on
+the user's behalf, using the session the user is already signed in to. These are
+the same actions the user can perform by hand in the site's own interface.
+
+No broader access is requested: no <all_urls>, no wildcard domains, no optional
+hosts, and no host_permissions entry beyond the content script matches above.
+Nothing read from those pages is transmitted anywhere. The extension has no
+server and makes no third-party requests of any kind.
+
+════════════════════════════════════════════════════════════════════════
+3. STORAGE JUSTIFICATION
+════════════════════════════════════════════════════════════════════════
+Storage is used only to keep the user's own settings on their own device:
+sort order, date filter, which of the supported sites the extension is enabled
+on, privacy blur options and strength, chat list appearance, the colour-vision
+simulator selection, and — only if the user chooses to set one — a salted
+PBKDF2-SHA256 hash of their screen-lock password.
+
+No conversation content, no chat titles, no account information and no
+identifiers are written to storage. The password itself is never stored, only
+the derivation. Nothing in storage is transmitted anywhere.
+
+════════════════════════════════════════════════════════════════════════
+4. REMOTE CODE
+════════════════════════════════════════════════════════════════════════
+Select: "No, I am not using remote code"
+
+If a justification box appears:
+All logic ships inside the package. There is no eval, no new Function, no
+remotely hosted or injected scripts, no CDN, no external libraries, and no
+bundler or minifier. The source published to the store is the source that runs.
+
+════════════════════════════════════════════════════════════════════════
+5. DATA USAGE  (answer every question, then tick all three boxes)
+════════════════════════════════════════════════════════════════════════
+Personally identifiable information ......... NOT collected
+Health information .......................... NOT collected
+Financial and payment information ........... NOT collected
+Authentication information .................. NOT collected
+Personal communications ..................... NOT collected
+Location .................................... NOT collected
+Web history ................................. NOT collected
+User activity ............................... NOT collected
+Website content ............................. NOT collected
+
+Then tick all three certifications:
+  [x] I do not sell or transfer user data to third parties, outside of the
+      approved use cases
+  [x] I do not use or transfer user data for purposes that are unrelated to my
+      item's single purpose
+  [x] I do not use or transfer user data to determine creditworthiness or for
+      lending purposes
+
+════════════════════════════════════════════════════════════════════════
+6. PRIVACY POLICY URL
+════════════════════════════════════════════════════════════════════════
+https://danish2598.github.io/chat-manager-pro/privacy-policy.html
+
+════════════════════════════════════════════════════════════════════════
+Then: Save draft  →  Submit for review
+════════════════════════════════════════════════════════════════════════

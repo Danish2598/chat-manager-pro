@@ -126,6 +126,17 @@ with no relationship to any of them.
 
 ---
 
+## Privacy practices tab
+
+Five things are required here and the item cannot be submitted without them.
+Full copy in `store-assets/privacy-tab-answers.txt`.
+
+**Note on host permissions.** The manifest has no `host_permissions` key, but
+`content_scripts.matches` grants host access and the store treats it as host
+permission use requiring justification. "We have no host permissions" is wrong
+in the store's terms — the four content-script match patterns are the thing
+being justified.
+
 ## Single purpose statement
 
 > Chat Manager Pro has one purpose: helping the user manage their own
