@@ -6,170 +6,173 @@
   <link rel="stylesheet" href="popup.css" />
 </head>
 <body>
-  <header class="head">
-    <h1>Chat Manager Pro</h1>
-  </header>
 
-  <main class="body">
-    <button id="open" class="primary" type="button">Open manager panel</button>
-    <p class="hint">
-      Opens on a supported tab. You can also use the round ☑ button at the
-      bottom-right of the page.
-    </p>
+<header class="topbar">
+  <span class="wordmark">Chat Manager<span class="wordmark-pro">Pro</span></span>
+  <span class="version">1.0</span>
+</header>
 
-    <section class="block">
-      <h2>Active on</h2>
-      <p class="hint hint-tight">
-        Turn a site off and the extension does nothing there — no panel, no
-        blur, no shortcuts. Takes effect immediately.
-      </p>
+<main class="body">
 
-      <label class="site"><input type="checkbox" id="s-claude" />
-        <span class="site-name">Claude</span>
-        <span class="site-caps">manage · delete · blur · lock</span></label>
+  <!-- primary action -->
+  <section class="card card-hero">
+    <h1>Manage your chats</h1>
+    <p>Search, sort, filter and bulk delete — with undo.</p>
+    <button id="open" class="cta" type="button">
+      <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 4h14M3 10h9M3 16h5"/></svg>
+      Open manager panel
+    </button>
+  </section>
 
-      <label class="site"><input type="checkbox" id="s-chatgpt" />
-        <span class="site-name">ChatGPT</span>
-        <span class="site-caps">manage · delete · blur · lock</span></label>
+  <!-- sites -->
+  <h2 class="section-label">Active on</h2>
+  <section class="card">
+    <label class="row">
+      <span class="ico ico-claude" aria-hidden="true">
+        <svg viewBox="0 0 20 20"><path d="M10 2.5 3 17h3l1.4-3.2h5.2L14 17h3L10 2.5Zm-1.5 8.6L10 7.6l1.5 3.5h-3Z"/></svg>
+      </span>
+      <span class="row-main"><span class="row-title">Claude</span>
+        <span class="row-sub">manage · delete · blur · lock</span></span>
+      <span class="switch"><input type="checkbox" id="s-claude" /><span class="track"><span class="knob"></span></span></span>
+    </label>
 
-      <label class="site"><input type="checkbox" id="s-gemini" />
-        <span class="site-name">Gemini</span>
-        <span class="site-caps">manage · blur · lock — no bulk delete</span></label>
-    </section>
+    <label class="row">
+      <span class="ico ico-gpt" aria-hidden="true">
+        <svg viewBox="0 0 20 20"><circle cx="10" cy="10" r="6.5"/><path d="M10 3.5v13M3.5 10h13"/></svg>
+      </span>
+      <span class="row-main"><span class="row-title">ChatGPT</span>
+        <span class="row-sub">manage · delete · blur · lock</span></span>
+      <span class="switch"><input type="checkbox" id="s-chatgpt" /><span class="track"><span class="knob"></span></span></span>
+    </label>
 
-    <section class="block">
-      <div class="block-head">
-        <h2>Privacy blur</h2>
-        <label class="switch">
-          <input type="checkbox" id="p-on" />
-          <span class="track"><span class="knob"></span></span>
-        </label>
-      </div>
-      <p class="hint hint-tight">
-        Hides content until you hover it. Toggle any time with
-        <kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>B</kbd>.
-      </p>
+    <label class="row">
+      <span class="ico ico-gemini" aria-hidden="true">
+        <svg viewBox="0 0 20 20"><path d="M10 2.5c.6 4 2.9 6.3 6.9 6.9-4 .6-6.3 2.9-6.9 6.9-.6-4-2.9-6.3-6.9-6.9 4-.6 6.3-2.9 6.9-6.9Z"/></svg>
+      </span>
+      <span class="row-main"><span class="row-title">Gemini <span class="pill">no bulk delete</span></span>
+        <span class="row-sub">manage · blur · lock</span></span>
+      <span class="switch"><input type="checkbox" id="s-gemini" /><span class="track"><span class="knob"></span></span></span>
+    </label>
+  </section>
 
-      <div id="p-opts" class="opts">
-        <label class="check"><input type="checkbox" id="p-titles" /><span>Chat titles</span></label>
-        <label class="check"><input type="checkbox" id="p-messages" /><span>Messages</span></label>
-        <label class="check"><input type="checkbox" id="p-media" /><span>Images &amp; files</span></label>
-        <label class="check"><input type="checkbox" id="p-account" /><span>Account details</span></label>
-        <label class="check"><input type="checkbox" id="p-input" /><span>Message input</span></label>
-        <label class="check"><input type="checkbox" id="p-hover" /><span>Reveal on hover</span></label>
+  <!-- privacy -->
+  <h2 class="section-label">Privacy</h2>
+  <section class="card">
+    <label class="row">
+      <span class="ico ico-blur" aria-hidden="true">
+        <svg viewBox="0 0 20 20"><circle cx="10" cy="10" r="6.5"/><path d="M10 3.5a6.5 6.5 0 0 1 0 13Z" fill="currentColor" stroke="none"/></svg>
+      </span>
+      <span class="row-main"><span class="row-title">Privacy blur</span>
+        <span class="row-sub">Hide content until you hover · <kbd>Alt</kbd><kbd>⇧</kbd><kbd>B</kbd></span></span>
+      <span class="switch"><input type="checkbox" id="p-on" /><span class="track"><span class="knob"></span></span></span>
+    </label>
 
-        <label class="field">
-          <span>Strength</span>
-          <select id="p-strength">
-            <option value="light">Light</option>
-            <option value="medium">Medium</option>
-            <option value="heavy">Heavy</option>
-          </select>
-        </label>
-      </div>
-    </section>
+    <div id="p-opts" class="sub">
+      <label class="check"><input type="checkbox" id="p-titles" /><span>Chat titles</span></label>
+      <label class="check"><input type="checkbox" id="p-messages" /><span>Messages</span></label>
+      <label class="check"><input type="checkbox" id="p-media" /><span>Images &amp; files</span></label>
+      <label class="check"><input type="checkbox" id="p-account" /><span>Account details</span></label>
+      <label class="check"><input type="checkbox" id="p-input" /><span>Message input</span></label>
+      <label class="check"><input type="checkbox" id="p-hover" /><span>Reveal on hover</span></label>
+      <label class="field"><span>Strength</span>
+        <select id="p-strength">
+          <option value="light">Light</option>
+          <option value="medium">Medium</option>
+          <option value="heavy">Heavy</option>
+        </select>
+      </label>
+    </div>
+  </section>
 
-    <section class="block">
-      <h2>Screen lock</h2>
+  <!-- screen lock -->
+  <h2 class="section-label">Screen lock</h2>
+  <section class="card">
+    <div class="row row-static">
+      <span class="ico ico-lock" aria-hidden="true">
+        <svg viewBox="0 0 20 20"><rect x="4.5" y="8.5" width="11" height="8" rx="2"/><path d="M7 8.5V6a3 3 0 0 1 6 0v2.5"/></svg>
+      </span>
+      <span class="row-main"><span class="row-title">Lock the page</span>
+        <span class="row-sub">When you step away · <kbd>Alt</kbd><kbd>⇧</kbd><kbd>L</kbd></span></span>
+    </div>
 
-      <div id="lock-unset">
-        <p class="hint hint-tight">
-          Blurs and locks the page when you step away.
-        </p>
-        <input class="text" type="password" id="lock-pw" placeholder="New password" autocomplete="new-password" />
-        <input class="text" type="password" id="lock-pw2" placeholder="Confirm password" autocomplete="new-password" />
-        <button id="lock-save" class="primary" type="button">Set password</button>
-      </div>
+    <div id="lock-unset" class="sub">
+      <input class="text" type="password" id="lock-pw" placeholder="New password" autocomplete="new-password" />
+      <input class="text" type="password" id="lock-pw2" placeholder="Confirm password" autocomplete="new-password" />
+      <button id="lock-save" class="btn" type="button">Set password</button>
+    </div>
 
-      <div id="lock-ready" hidden>
-        <p class="hint hint-tight">
-          Password set. Lock with <kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>L</kbd>
-          or the 🔒 button in the panel.
-        </p>
-        <button id="lock-now" class="primary" type="button">Lock now</button>
-        <button id="lock-remove" class="linkbtn" type="button">Remove password</button>
-      </div>
+    <div id="lock-ready" class="sub" hidden>
+      <button id="lock-now" class="btn" type="button">Lock now</button>
+      <button id="lock-remove" class="linkbtn" type="button">Remove password</button>
+    </div>
+    <p id="lock-msg" class="msg"></p>
+  </section>
 
-      <p id="lock-msg" class="msg"></p>
-    </section>
-
-    <section class="block">
-      <div class="block-head">
-        <h2>Chat list appearance</h2>
-        <button id="t-reset" class="linkbtn linkbtn-inline" type="button">Reset</button>
-      </div>
-      <p class="hint hint-tight">
-        Applies to the chat titles in the site's sidebar and in the panel.
-      </p>
-
+  <!-- appearance -->
+  <div class="section-head">
+    <h2 class="section-label">Chat list appearance</h2>
+    <button id="t-reset" class="linkbtn linkbtn-inline" type="button">Reset</button>
+  </div>
+  <section class="card">
+    <div class="sub sub-flush">
       <label class="field"><span>Font</span>
         <select id="t-font">
-          <option value="system">System</option>
-          <option value="serif">Serif</option>
-          <option value="mono">Monospace</option>
+          <option value="system">System</option><option value="serif">Serif</option><option value="mono">Monospace</option>
         </select>
       </label>
-
       <label class="field"><span>Title size</span>
         <select id="t-size">
-          <option value="small">Small</option>
-          <option value="medium">Medium</option>
-          <option value="large">Large</option>
+          <option value="small">Small</option><option value="medium">Medium</option><option value="large">Large</option>
         </select>
       </label>
-
       <label class="field"><span>Density</span>
         <select id="t-density">
-          <option value="comfortable">Comfortable</option>
-          <option value="compact">Compact</option>
+          <option value="comfortable">Comfortable</option><option value="compact">Compact</option>
         </select>
       </label>
-
       <label class="field"><span>Accent</span>
         <select id="t-accent">
-          <option value="default">Default</option>
-          <option value="blue">Blue</option>
-          <option value="teal">Teal</option>
-          <option value="violet">Violet</option>
-          <option value="amber">Amber</option>
-          <option value="rose">Rose</option>
+          <option value="default">Default</option><option value="blue">Blue</option>
+          <option value="teal">Teal</option><option value="violet">Violet</option>
+          <option value="amber">Amber</option><option value="rose">Rose</option>
           <option value="slate">Slate</option>
         </select>
       </label>
-
       <p id="t-msg" class="msg"></p>
-    </section>
+    </div>
+  </section>
 
-    <section class="block">
-      <h2>List defaults</h2>
-      <label class="field">
-        <span>Sort</span>
+  <!-- list defaults -->
+  <h2 class="section-label">List defaults</h2>
+  <section class="card">
+    <div class="sub sub-flush">
+      <label class="field"><span>Sort</span>
         <select id="sort">
-          <option value="newest">Newest first</option>
-          <option value="oldest">Oldest first</option>
-          <option value="az">A–Z</option>
-          <option value="za">Z–A</option>
+          <option value="newest">Newest first</option><option value="oldest">Oldest first</option>
+          <option value="az">A–Z</option><option value="za">Z–A</option>
         </select>
       </label>
-      <label class="field">
-        <span>Filter</span>
+      <label class="field"><span>Filter</span>
         <select id="filter">
-          <option value="all">All</option>
-          <option value="today">Today</option>
-          <option value="week">This week</option>
-          <option value="month">This month</option>
+          <option value="all">All</option><option value="today">Today</option>
+          <option value="week">This week</option><option value="month">This month</option>
           <option value="older">Older</option>
         </select>
       </label>
-    </section>
+    </div>
+  </section>
 
-    <p class="privacy">
-      Runs entirely on your device. No accounts, no tracking, no data leaves
-      your browser.
-    </p>
-  </main>
+  <!-- footer -->
+  <section class="card card-foot">
+    <span>Runs entirely on your device.<br /><span class="muted">No tracking, no data leaves your browser.</span></span>
+    <a class="foot-link" href="https://github.com/Danish2598/chat-manager-pro" target="_blank" rel="noopener">
+      Source <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M8 4h8v8M16 4 8.5 11.5M13 12v4H4V7h4"/></svg>
+    </a>
+  </section>
 
-  <script src="lock-crypto.js"></script>
-  <script src="popup.js"></script>
+</main>
+
+<script src="lock-crypto.js"></script>
+<script src="popup.js"></script>
 </body>
 </html>

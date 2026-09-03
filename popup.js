@@ -68,10 +68,17 @@ const T = {
 };
 const themeMsg = $('t-msg');
 
+/** The popup wears the accent you chose, so the setting shows its own effect. */
+function applyAccent(accent) {
+  if (accent && accent !== 'default') document.body.dataset.accent = accent;
+  else delete document.body.dataset.accent;
+}
+
 function saveTheme() {
   const value = {};
   Object.entries(T).forEach(([key, node]) => { value[key] = node.value; });
   chrome.storage.local.set({ [THEME_KEY]: value });
+  applyAccent(value.accent);
   themeMsg.textContent = '';
 }
 
@@ -81,6 +88,7 @@ Object.values(T).forEach((node) => node.addEventListener('change', saveTheme));
 // your sort order, blur settings or screen-lock password.
 $('t-reset').addEventListener('click', () => {
   Object.entries(T).forEach(([key, node]) => { node.value = THEME_DEFAULTS[key]; });
+  applyAccent(THEME_DEFAULTS.accent);
   chrome.storage.local.set({ [THEME_KEY]: { ...THEME_DEFAULTS } }, () => {
     themeMsg.textContent = 'Appearance reset. Other settings untouched.';
   });
@@ -139,6 +147,7 @@ chrome.storage.local.get([PREFS_KEY, PRIVACY_KEY, LOCK_KEY, SITES_KEY, THEME_KEY
 
   const t = { ...THEME_DEFAULTS, ...(res && res[THEME_KEY]) };
   Object.entries(T).forEach(([key, node]) => { node.value = t[key]; });
+  applyAccent(t.accent);
   const prefs = { ...DEFAULTS, ...(res && res[PREFS_KEY]) };
   sortSel.value = prefs.sort;
   filterSel.value = prefs.filter;
