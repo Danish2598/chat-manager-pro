@@ -1,0 +1,594 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Chat Manager Pro</title>
+  <style>/**
+ * Chat Manager Pro — toolbar popup.
+ *
+ * Card-on-tinted-canvas layout: section labels sit outside the cards, every
+ * row leads with a tinted icon tile, and unavailable capabilities are stated
+ * on the row itself with a pill rather than hidden in prose.
+ */
+
+:root {
+  --accent: #2354d4;
+  --accent-soft: #e8eefc;
+
+  --canvas: #dfe4ee;
+  --card: #ffffff;
+  --border: #e6e8ee;
+  --text: #131720;
+  --dim: #646b7a;
+  --muted: #8b91a0;
+  --danger: #c8443a;
+  --radius: 14px;
+}
+
+/* Accent follows the appearance preset, set by popup.js on <body>. */
+body[data-accent="blue"]   { --accent: #3b6fd4; --accent-soft: #e8eefc; }
+body[data-accent="teal"]   { --accent: #2a9d8f; --accent-soft: #e2f4f1; }
+body[data-accent="violet"] { --accent: #7c5cd6; --accent-soft: #efeafc; }
+body[data-accent="amber"]  { --accent: #c07d1f; --accent-soft: #fbf0dc; }
+body[data-accent="rose"]   { --accent: #cf5566; --accent-soft: #fbe8ea; }
+body[data-accent="slate"]  { --accent: #5b6b7c; --accent-soft: #e9edf1; }
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --accent: #6f97ee;
+    --accent-soft: #24304a;
+    --canvas: #14161b;
+    --card: #1e2129;
+    --border: #2c313c;
+    --text: #eceef3;
+    --dim: #9aa1b1;
+    --muted: #767d8c;
+    --danger: #e0655a;
+  }
+  body[data-accent="blue"]   { --accent: #7fa4ec; --accent-soft: #24304a; }
+  body[data-accent="teal"]   { --accent: #58c4b5; --accent-soft: #1c332f; }
+  body[data-accent="violet"] { --accent: #a58bea; --accent-soft: #2b2542; }
+  body[data-accent="amber"]  { --accent: #dda13f; --accent-soft: #382e18; }
+  body[data-accent="rose"]   { --accent: #e88494; --accent-soft: #3a2429; }
+  body[data-accent="slate"]  { --accent: #8b9bab; --accent-soft: #262d34; }
+}
+
+* { box-sizing: border-box; }
+
+body {
+  width: 360px;
+  margin: 0;
+  background: var(--canvas);
+  color: var(--text);
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+/* ---------- top bar ---------- */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 13px 16px;
+  background: var(--accent);
+  color: #fff;
+}
+.wordmark { font-size: 15px; font-weight: 700; letter-spacing: -0.01em; }
+.wordmark-pro {
+  margin-left: 5px;
+  padding: 1px 6px;
+  border-radius: 5px;
+  background: rgba(255, 255, 255, 0.22);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  vertical-align: 1px;
+}
+.version { font-size: 11px; opacity: 0.75; }
+
+/* ---------- layout ---------- */
+.body { padding: 14px 12px 16px; }
+
+.section-label {
+  margin: 18px 4px 7px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--dim);
+}
+.section-head { display: flex; align-items: baseline; justify-content: space-between; }
+.section-head .section-label { margin-right: 0; }
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+/* ---------- hero ---------- */
+.card-hero { padding: 16px; }
+.card-hero h1 { margin: 0 0 3px; font-size: 15px; font-weight: 650; }
+.card-hero p { margin: 0 0 13px; font-size: 12.5px; color: var(--dim); }
+
+.cta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 11px 12px;
+  border: none;
+  border-radius: 10px;
+  background: var(--accent);
+  color: #fff;
+  font: inherit;
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.cta:hover { filter: brightness(1.08); }
+.cta svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: round; }
+
+/* ---------- rows ---------- */
+.row {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 11px 13px;
+  cursor: pointer;
+}
+.row-static { cursor: default; }
+.row + .row, .row + .sub, .sub + .row { border-top: 1px solid var(--border); }
+.row:not(.row-static):hover { background: var(--accent-soft); }
+
+.ico {
+  flex: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 9px;
+  display: grid;
+  place-items: center;
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.ico svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.ico-claude svg { fill: currentColor; stroke: none; }
+.ico-gemini svg { fill: currentColor; stroke: none; }
+
+.row-main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+.row-title { font-size: 13px; font-weight: 550; }
+.row-sub { font-size: 11px; color: var(--muted); }
+.row-sub kbd {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 9.5px;
+  padding: 0 3px;
+  margin-left: 2px;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+}
+
+.pill {
+  margin-left: 5px;
+  padding: 1px 6px;
+  border-radius: 99px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  vertical-align: 1px;
+}
+
+/* ---------- switch ---------- */
+.switch { position: relative; flex: none; display: inline-flex; }
+.switch input { position: absolute; opacity: 0; width: 0; height: 0; }
+.track {
+  width: 36px; height: 21px;
+  border-radius: 999px;
+  background: var(--border);
+  transition: background 0.15s ease;
+  display: block;
+}
+.knob {
+  position: absolute; top: 3px; left: 3px;
+  width: 15px; height: 15px;
+  border-radius: 50%;
+  background: var(--card);
+  transition: transform 0.15s ease;
+}
+.switch input:checked + .track { background: var(--accent); }
+.switch input:checked + .track .knob { transform: translateX(15px); }
+.switch input:focus-visible + .track { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* ---------- nested options ---------- */
+.sub { padding: 11px 13px 13px 56px; transition: opacity 0.15s ease; }
+.sub-flush { padding-left: 13px; }
+.sub.disabled { opacity: 0.4; pointer-events: none; }
+
+.check { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; cursor: pointer; font-size: 12.5px; }
+.check input { accent-color: var(--accent); margin: 0; width: 14px; height: 14px; }
+
+.field { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 8px; }
+.field:last-child { margin-bottom: 0; }
+.field > span { font-size: 12.5px; }
+.field select {
+  flex: 1;
+  max-width: 158px;
+  padding: 6px 8px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--canvas);
+  color: var(--text);
+  font: inherit;
+  font-size: 12.5px;
+  cursor: pointer;
+}
+.field select:focus { outline: none; border-color: var(--accent); }
+
+/* ---------- buttons + inputs ---------- */
+.text {
+  width: 100%;
+  padding: 8px 10px;
+  margin-bottom: 8px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--canvas);
+  color: var(--text);
+  font: inherit;
+  font-size: 12.5px;
+}
+.text:focus { outline: none; border-color: var(--accent); }
+
+.btn {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid var(--accent);
+  border-radius: 8px;
+  background: var(--accent);
+  color: #fff;
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.btn:hover { filter: brightness(1.08); }
+
+.linkbtn {
+  display: block;
+  width: 100%;
+  margin-top: 7px;
+  padding: 3px;
+  border: none;
+  background: none;
+  color: var(--dim);
+  font: inherit;
+  font-size: 11.5px;
+  text-decoration: underline;
+  cursor: pointer;
+}
+.linkbtn:hover { color: var(--text); }
+.linkbtn-inline {
+  width: auto;
+  margin: 0 4px 0 0;
+  padding: 0;
+  font-size: 11.5px;
+  text-decoration: underline;
+}
+
+.msg { margin: 8px 0 0; font-size: 11.5px; color: var(--dim); min-height: 14px; }
+.msg-error { color: var(--danger); }
+
+/* ---------- footer ---------- */
+.card-foot {
+  margin-top: 18px;
+  padding: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 11.5px;
+  line-height: 1.45;
+}
+.muted { color: var(--muted); }
+.foot-link {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--accent);
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.foot-link:hover { text-decoration: underline; }
+.foot-link svg { width: 12px; height: 12px; fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
+
+@media (prefers-reduced-motion: reduce) {
+  .track, .knob, .sub { transition: none; }
+}
+
+/* ---------- view router ---------- */
+.view { display: none; }
+body[data-view="home"]       .view[data-view="home"],
+body[data-view="sites"]      .view[data-view="sites"],
+body[data-view="privacy"]    .view[data-view="privacy"],
+body[data-view="lock"]       .view[data-view="lock"],
+body[data-view="appearance"] .view[data-view="appearance"],
+body[data-view="vision"]     .view[data-view="vision"] { display: block; }
+
+.subhead {
+  display: flex;
+  align-items: flex-start;
+  gap: 11px;
+  padding: 2px 4px 14px;
+}
+.subhead h1 { margin: 0 0 2px; font-size: 15px; font-weight: 650; }
+.subhead p { margin: 0; font-size: 12px; color: var(--dim); line-height: 1.45; }
+
+.back {
+  flex: none;
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  background: var(--card);
+  color: var(--text);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+}
+.back:hover { background: var(--accent-soft); color: var(--accent); }
+.back svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+/* rows that navigate rather than toggle */
+.row-nav {
+  width: 100%;
+  border: none;
+  background: none;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+}
+.chev {
+  flex: none;
+  width: 17px;
+  height: 17px;
+  fill: none;
+  stroke: var(--muted);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.row-nav:hover .chev { stroke: var(--accent); }
+
+.note {
+  margin: 12px 4px 0;
+  font-size: 11.5px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+/* ---------- quick actions in the hero ---------- */
+.quick { display: flex; gap: 8px; margin-top: 9px; }
+.quick-btn {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  background: var(--canvas);
+  color: var(--dim);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 550;
+  cursor: pointer;
+}
+.quick-btn:hover:not(:disabled) { background: var(--accent-soft); color: var(--accent); border-color: var(--accent-soft); }
+.quick-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+.quick-btn svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.quick-btn.quick-on { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+.msg-pad { padding: 0 13px 12px; margin: 0; }
+</style>
+</head>
+<body data-view="home">
+
+<header class="topbar">
+  <span class="wordmark">Chat Manager<span class="wordmark-pro">Pro</span></span>
+  <span class="version">1.0</span>
+</header>
+
+<!-- ============================ HOME ============================ -->
+<main class="body view" data-view="home">
+
+  <section class="card card-hero">
+    <h1>Manage your chats</h1>
+    <p>Search, sort, filter and bulk delete — with undo.</p>
+    <button id="open" class="cta" type="button">
+      <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 4h14M3 10h9M3 16h5"/></svg>
+      Open manager panel
+    </button>
+    <p id="open-msg" class="msg"></p>
+    <div class="quick">
+      <button id="quick-blur" class="quick-btn" type="button">
+        <svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="6.5"/><path d="M10 3.5a6.5 6.5 0 0 1 0 13Z" fill="currentColor" stroke="none"/></svg>
+        <span id="quick-blur-label">Blur</span>
+      </button>
+      <button id="quick-lock" class="quick-btn" type="button">
+        <svg viewBox="0 0 20 20" aria-hidden="true"><rect x="4.5" y="8.5" width="11" height="8" rx="2"/><path d="M7 8.5V6a3 3 0 0 1 6 0v2.5"/></svg>
+        Lock
+      </button>
+    </div>
+  </section>
+
+  <h2 class="section-label">Settings</h2>
+  <section class="card">
+    <button class="row row-nav" type="button" data-goto="sites">
+      <span class="ico" aria-hidden="true"><svg viewBox="0 0 20 20"><circle cx="10" cy="10" r="7"/><path d="M3 10h14M10 3a11 11 0 0 1 0 14a11 11 0 0 1 0-14"/></svg></span>
+      <span class="row-main"><span class="row-title">Sites</span><span class="row-sub" id="st-sites">3 of 3 active</span></span>
+      <svg class="chev" viewBox="0 0 20 20" aria-hidden="true"><path d="m8 5 5 5-5 5"/></svg>
+    </button>
+
+    <button class="row row-nav" type="button" data-goto="privacy">
+      <span class="ico" aria-hidden="true"><svg viewBox="0 0 20 20"><circle cx="10" cy="10" r="6.5"/><path d="M10 3.5a6.5 6.5 0 0 1 0 13Z" fill="currentColor" stroke="none"/></svg></span>
+      <span class="row-main"><span class="row-title">Privacy blur</span><span class="row-sub" id="st-privacy">On &middot; 5 of 5 targets &middot; medium</span></span>
+      <svg class="chev" viewBox="0 0 20 20" aria-hidden="true"><path d="m8 5 5 5-5 5"/></svg>
+    </button>
+
+    <button class="row row-nav" type="button" data-goto="lock">
+      <span class="ico" aria-hidden="true"><svg viewBox="0 0 20 20"><rect x="4.5" y="8.5" width="11" height="8" rx="2"/><path d="M7 8.5V6a3 3 0 0 1 6 0v2.5"/></svg></span>
+      <span class="row-main"><span class="row-title">Screen lock</span><span class="row-sub" id="st-lock">Password set</span></span>
+      <svg class="chev" viewBox="0 0 20 20" aria-hidden="true"><path d="m8 5 5 5-5 5"/></svg>
+    </button>
+
+    <button class="row row-nav" type="button" data-goto="appearance">
+      <span class="ico" aria-hidden="true"><svg viewBox="0 0 20 20"><path d="M4 16 10 4l6 12M6.5 12h7"/></svg></span>
+      <span class="row-main"><span class="row-title">Chat list appearance</span><span class="row-sub" id="st-appearance">Default</span></span>
+      <svg class="chev" viewBox="0 0 20 20" aria-hidden="true"><path d="m8 5 5 5-5 5"/></svg>
+    </button>
+
+    <button class="row row-nav" type="button" data-goto="vision">
+      <span class="ico" aria-hidden="true"><svg viewBox="0 0 20 20"><path d="M2 10s3-5 8-5 8 5 8 5-3 5-8 5-8-5-8-5Z"/><circle cx="10" cy="10" r="2.4"/></svg></span>
+      <span class="row-main"><span class="row-title">Vision simulators</span><span class="row-sub" id="st-vision">Off</span></span>
+      <svg class="chev" viewBox="0 0 20 20" aria-hidden="true"><path d="m8 5 5 5-5 5"/></svg>
+    </button>
+  </section>
+
+  <section class="card card-foot">
+    <span>Runs entirely on your device.<br /><span class="muted">No tracking, no data leaves your browser.</span></span>
+    <a class="foot-link" href="https://github.com/Danish2598/chat-manager-pro" target="_blank" rel="noopener">
+      Source <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M8 4h8v8M16 4 8.5 11.5M13 12v4H4V7h4"/></svg>
+    </a>
+  </section>
+</main>
+
+<!-- ============================ SITES ============================ -->
+<main class="body view" data-view="sites">
+  <div class="subhead">
+    <button class="back" type="button" data-back aria-label="Back"><svg viewBox="0 0 20 20"><path d="m12 5-5 5 5 5"/></svg></button>
+    <div><h1>Sites</h1><p>Turn a site off and the extension does nothing there — no panel, no blur, no shortcuts.</p></div>
+  </div>
+  <section class="card">
+    <label class="row">
+      <span class="row-main"><span class="row-title">Claude</span><span class="row-sub">manage · delete · blur · lock</span></span>
+      <span class="switch"><input type="checkbox" id="s-claude" checked /><span class="track"><span class="knob"></span></span></span>
+    </label>
+    <label class="row">
+      <span class="row-main"><span class="row-title">ChatGPT</span><span class="row-sub">manage · delete · blur · lock</span></span>
+      <span class="switch"><input type="checkbox" id="s-chatgpt" checked /><span class="track"><span class="knob"></span></span></span>
+    </label>
+    <label class="row">
+      <span class="row-main"><span class="row-title">Gemini <span class="pill">no bulk delete</span></span><span class="row-sub">manage · blur · lock</span></span>
+      <span class="switch"><input type="checkbox" id="s-gemini" checked /><span class="track"><span class="knob"></span></span></span>
+    </label>
+  </section>
+  <p class="note">Gemini provides no API for deleting chats. Everything else works there.</p>
+</main>
+
+<!-- =========================== PRIVACY =========================== -->
+<main class="body view" data-view="privacy">
+  <div class="subhead">
+    <button class="back" type="button" data-back aria-label="Back"><svg viewBox="0 0 20 20"><path d="m12 5-5 5 5 5"/></svg></button>
+    <div><h1>Privacy blur</h1><p>Hide content until you hover it. Toggle any time with <kbd>Alt</kbd><kbd>⇧</kbd><kbd>B</kbd>.</p></div>
+  </div>
+  <section class="card">
+    <label class="row">
+      <span class="row-main"><span class="row-title">Blur is on</span><span class="row-sub">Applies to every site you have enabled</span></span>
+      <span class="switch"><input type="checkbox" id="p-on" checked /><span class="track"><span class="knob"></span></span></span>
+    </label>
+    <div id="p-opts" class="sub sub-flush">
+      <label class="check"><input type="checkbox" id="p-titles" checked /><span>Chat titles</span></label>
+      <label class="check"><input type="checkbox" id="p-messages" checked /><span>Messages</span></label>
+      <label class="check"><input type="checkbox" id="p-media" checked /><span>Images &amp; files</span></label>
+      <label class="check"><input type="checkbox" id="p-account" checked /><span>Account details</span></label>
+      <label class="check"><input type="checkbox" id="p-input" checked /><span>Message input</span></label>
+      <label class="check"><input type="checkbox" id="p-hover" checked /><span>Reveal on hover</span></label>
+      <label class="field"><span>Strength</span>
+        <select id="p-strength"><option value="light">Light</option><option value="medium">Medium</option><option value="heavy">Heavy</option></select>
+      </label>
+    </div>
+  </section>
+</main>
+
+<!-- ============================ LOCK ============================ -->
+<main class="body view" data-view="lock">
+  <div class="subhead">
+    <button class="back" type="button" data-back aria-label="Back"><svg viewBox="0 0 20 20"><path d="m12 5-5 5 5 5"/></svg></button>
+    <div><h1>Screen lock</h1><p>Locks the page behind a password when you step away. <kbd>Alt</kbd><kbd>⇧</kbd><kbd>L</kbd>.</p></div>
+  </div>
+  <section class="card">
+    <div id="lock-unset" class="sub sub-flush">
+      <input class="text" type="password" id="lock-pw" placeholder="New password" autocomplete="new-password" />
+      <input class="text" type="password" id="lock-pw2" placeholder="Confirm password" autocomplete="new-password" />
+      <button id="lock-save" class="btn" type="button">Set password</button>
+    </div>
+    <div id="lock-ready" class="sub sub-flush" hidden>
+      <button id="lock-now" class="btn" type="button">Lock now</button>
+      <button id="lock-remove" class="linkbtn" type="button">Remove password</button>
+    </div>
+    <p id="lock-msg" class="msg msg-pad"></p>
+  </section>
+  <p class="note">Deters someone using your unattended machine. It is not protection
+  against anyone who can disable browser extensions. Your password is never stored —
+  only a salted hash of it.</p>
+</main>
+
+<!-- ========================= APPEARANCE ========================= -->
+<main class="body view" data-view="appearance">
+  <div class="subhead">
+    <button class="back" type="button" data-back aria-label="Back"><svg viewBox="0 0 20 20"><path d="m12 5-5 5 5 5"/></svg></button>
+    <div><h1>Chat list appearance</h1><p>Applies to chat titles in the site's sidebar and in the panel.</p></div>
+  </div>
+  <section class="card">
+    <div class="sub sub-flush">
+      <label class="field"><span>Font</span><select id="t-font"><option value="system">System</option><option value="serif">Serif</option><option value="mono">Monospace</option></select></label>
+      <label class="field"><span>Title size</span><select id="t-size"><option value="small">Small</option><option value="medium">Medium</option><option value="large">Large</option></select></label>
+      <label class="field"><span>Density</span><select id="t-density"><option value="comfortable">Comfortable</option><option value="compact">Compact</option></select></label>
+      <label class="field"><span>Accent</span><select id="t-accent">
+        <option value="default">Default</option><option value="blue">Blue</option><option value="teal">Teal</option>
+        <option value="violet">Violet</option><option value="amber">Amber</option><option value="rose">Rose</option><option value="slate">Slate</option>
+      </select></label>
+      <p id="t-msg" class="msg"></p>
+    </div>
+  </section>
+  <button id="t-reset" class="linkbtn" type="button">Reset appearance</button>
+  <p class="note">Reset restores the look only. Your sites, blur settings and lock password are untouched.</p>
+</main>
+
+<!-- =========================== VISION =========================== -->
+<main class="body view" data-view="vision">
+  <div class="subhead">
+    <button class="back" type="button" data-back aria-label="Back"><svg viewBox="0 0 20 20"><path d="m12 5-5 5 5 5"/></svg></button>
+    <div><h1>Colour blindness</h1><p>Simulate how this page looks to someone with colour vision deficiency.</p></div>
+  </div>
+  <section class="card">
+    <label class="row">
+      <span class="row-main"><span class="row-title">Protanopia</span><span class="row-sub">Red-blind colour vision</span></span>
+      <span class="switch"><input type="radio" name="cmp-cb" id="cb-protanopia" value="protanopia" data-cb="protanopia" /><span class="track"><span class="knob"></span></span></span>
+    </label>
+    <label class="row">
+      <span class="row-main"><span class="row-title">Deuteranopia</span><span class="row-sub">Green-blind colour vision</span></span>
+      <span class="switch"><input type="radio" name="cmp-cb" id="cb-deuteranopia" value="deuteranopia" data-cb="deuteranopia" /><span class="track"><span class="knob"></span></span></span>
+    </label>
+    <label class="row">
+      <span class="row-main"><span class="row-title">Tritanopia</span><span class="row-sub">Blue-blind colour vision</span></span>
+      <span class="switch"><input type="radio" name="cmp-cb" id="cb-tritanopia" value="tritanopia" data-cb="tritanopia" /><span class="track"><span class="knob"></span></span></span>
+    </label>
+    <label class="row">
+      <span class="row-main"><span class="row-title">Achromatopsia</span><span class="row-sub">Full colour blindness (greyscale)</span></span>
+      <span class="switch"><input type="radio" name="cmp-cb" id="cb-achromatopsia" value="achromatopsia" data-cb="achromatopsia" /><span class="track"><span class="knob"></span></span></span>
+    </label>
+  </section>
+  <p class="note">One at a time — turning one on switches the others off. Click the
+  active one to turn it off. Affects only what you see, never what you send.</p>
+</main>
+
+
+
+</body>
+</html>

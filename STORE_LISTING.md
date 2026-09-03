@@ -193,31 +193,32 @@ push.
 
 ## Screenshots
 
-1280×800 (or 640×400), up to five, first one is the thumbnail. Shoot them on a
-throwaway account with harmless chat titles — real titles in a store screenshot
-are a permanent, public data leak.
-
-1. **The panel, open, with several chats selected** — the thumbnail. Show the
-   search box, sort/filter, and the selected count in one frame.
-2. **The delete confirmation** — titles listed, backup checkbox visible. This is
-   the trust shot; it is what separates this from a reckless bulk deleter.
-3. **The undo toast counting down.**
-4. **Privacy blur active** — half the sidebar blurred, one row hovered and sharp.
-   Reads instantly in a thumbnail grid.
-5. **The lock screen.**
-
----
-
-## Building the upload
+Five are generated at exactly 1280x800 into `store-assets/`:
 
 ```bash
-python3 tools_package.py
+python3 tools_screenshots.py --render
 ```
 
-Writes `dist/chat-manager-pro-<version>.zip` containing only the 13 files the
-extension actually runs. Development files — generators, the console
-diagnostic, the test plan, this document, the hosted privacy policy — stay in
-the repo. They add nothing at runtime and only widen what a reviewer reads.
+| File | Shows |
+|---|---|
+| `1-bulk-delete.png` | Panel with four chats selected and the Delete button live |
+| `2-confirm.png` | Confirmation listing every title, with the backup option |
+| `3-privacy-blur.png` | Sidebar and panel blurred, one row revealed on hover |
+| `4-screen-lock.png` | The locked screen |
+| `5-settings.png` | The popup, showing the single-permission story |
+
+They render the **real** `content.css` and `popup.html` over a neutral chat-app
+mock. Neutral deliberately: a store screenshot must not reproduce another
+company's interface or branding, and a mock cannot leak real conversation
+titles the way a screenshot of your own account would.
+
+Edit the copy in `tools_screenshots.py` and re-render — the captions are the
+listing's headlines and are worth iterating on.
+
+Note on `4-screen-lock.png`: the background is blank because the lock really is
+opaque. That is the feature working, not a rendering fault. If you would rather
+the slot showed something busier, swap it for the vision simulator or the
+appearance screen.
 
 ## Pre-submission checklist
 
@@ -227,7 +228,7 @@ the repo. They add nothing at runtime and only widen what a reviewer reads.
 - [x] Privacy policy published: https://danish2598.github.io/chat-manager-pro/privacy-policy.html
 - [ ] Trademark disclaimer present at the end of the description
 - [ ] No Anthropic logo, wordmark, or brand colours in icon or screenshots
-- [ ] Screenshots taken on a throwaway account
+- [x] Screenshots generated (`python3 tools_screenshots.py --render`) — no real chat titles in them
 - [ ] Trader / non-trader status answered (required for EU distribution)
 - [ ] Tested on a clean Chrome profile, installed unpacked, from a cold load
 - [ ] **Bulk delete executed successfully at least once on a throwaway chat, on

@@ -1,0 +1,938 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+*{box-sizing:border-box}
+html,body{margin:0;width:1280px;height:800px;overflow:hidden;
+  font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  background:#e8ebf2}
+.caption{height:150px;padding:34px 56px;background:linear-gradient(135deg,#524AE8,#863CD8);color:#fff}
+.caption h2{margin:0 0 7px;font-size:32px;font-weight:700;letter-spacing:-.02em}
+.caption p{margin:0;font-size:17px;opacity:.9;font-weight:400}
+.shot{position:relative;height:650px;overflow:hidden;background:#fff}
+/* neutral chat-app mock */
+.mock{position:absolute;inset:0;display:flex;background:#fbfbfa}
+.side{width:290px;flex:none;border-right:1px solid #eceae5;padding:18px 0;background:#f7f6f4}
+.side h3{margin:0 0 12px;padding:0 18px;font-size:12px;letter-spacing:.06em;
+  text-transform:uppercase;color:#9a978f}
+.side .item{padding:9px 18px;font-size:13.5px;color:#2b2926;white-space:nowrap;
+  overflow:hidden;text-overflow:ellipsis}
+.side .item.sel{background:#eceaf6}
+.blurred{filter:blur(7px)}
+.main{flex:1;padding:44px 56px}
+.bubble{max-width:520px;padding:15px 18px;border-radius:14px;background:#f2f1ee;
+  font-size:14.5px;line-height:1.6;color:#3a3835;margin-bottom:14px}
+.bubble.me{background:#524AE8;color:#fff;margin-left:auto}
+</style></head><body>
+<div class="caption"><h2>Blur your chats in public</h2><p>Titles, messages, images and the message box stay hidden until you hover them.</p></div>
+<div class="shot"><div class="mock"><div class="side"><h3>Chats</h3><div class="item blurred">Quarterly planning notes</div><div class="item blurred">Refactor the billing module</div><div class="item blurred">Trip itinerary for March</div><div class="item">Recipe ideas for the weekend</div><div class="item blurred">Draft reply to the landlord</div><div class="item blurred">SQL join explanation</div><div class="item blurred">Book recommendations</div><div class="item blurred">Interview prep questions</div><div class="item blurred">Budget spreadsheet formulas</div><div class="item blurred">Fix the printer driver</div><div class="item blurred">Summarise this contract</div><div class="item blurred">Learning Spanish basics</div></div><div class="main"><div class="bubble me">Can you summarise this?</div><div class="bubble">Of course — here is a short summary of the key points…</div></div></div><style>/**
+ * Chat Manager Pro — injected panel styles.
+ * Everything is scoped under #cmp-root and sets explicit values, so host page
+ * styles cannot bleed in and ours cannot leak out.
+ */
+
+#cmp-root {
+  --cmp-bg: #ffffff;
+  --cmp-bg-soft: #f6f6f4;
+  --cmp-border: #e3e2dd;
+  --cmp-text: #1f1e1c;
+  --cmp-text-dim: #6f6d66;
+  --cmp-accent: var(--cmp-accent-user, #3b6fd4);
+  --cmp-danger: #c8443a;
+  --cmp-danger-hover: #a93831;
+  --cmp-selected: #eaf0fc;
+  --cmp-shadow: 0 12px 40px rgba(0, 0, 0, 0.18);
+  --cmp-radius: 10px;
+
+  position: fixed;
+  inset: 0;
+  z-index: 2147483000;
+  pointer-events: none;
+  overflow: hidden;
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--cmp-text);
+}
+
+@media (prefers-color-scheme: dark) {
+  #cmp-root {
+    --cmp-bg: #26251f;
+    --cmp-bg-soft: #1e1d18;
+    --cmp-border: #3b392f;
+    --cmp-text: #efeee6;
+    --cmp-text-dim: #a3a096;
+    --cmp-accent: var(--cmp-accent-user, #7fa4ec);
+    --cmp-danger: #e0655a;
+    --cmp-danger-hover: #f07b70;
+    --cmp-selected: #2f3a4d;
+    --cmp-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+  }
+}
+
+#cmp-root * { box-sizing: border-box; }
+
+/* ---------- floating launcher ---------- */
+.cmp-fab {
+  position: absolute;
+  right: 18px;
+  bottom: 18px;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 1px solid var(--cmp-border);
+  background: var(--cmp-bg);
+  color: var(--cmp-text);
+  font-size: 17px;
+  cursor: pointer;
+  pointer-events: auto;
+  box-shadow: var(--cmp-shadow);
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+.cmp-fab:hover { transform: scale(1.06); }
+#cmp-root.cmp-open .cmp-fab { opacity: 0; pointer-events: none; }
+
+/* ---------- panel ---------- */
+.cmp-panel {
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 100%;
+  width: min(420px, 100vw);
+  display: flex;
+  flex-direction: column;
+  background: var(--cmp-bg);
+  border-left: 1px solid var(--cmp-border);
+  box-shadow: var(--cmp-shadow);
+  transform: translateX(100%);
+  visibility: hidden;
+  transition: transform 0.22s cubic-bezier(0.32, 0.72, 0, 1), visibility 0.22s;
+  pointer-events: auto;
+}
+#cmp-root.cmp-open .cmp-panel { transform: translateX(0); visibility: visible; }
+
+.cmp-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--cmp-border);
+}
+.cmp-title-wrap { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.cmp-title { font-weight: 600; font-size: 15px; }
+.cmp-badge {
+  font-size: 11px;
+  padding: 2px 7px;
+  border-radius: 99px;
+  background: var(--cmp-bg-soft);
+  color: var(--cmp-text-dim);
+  border: 1px solid var(--cmp-border);
+  white-space: nowrap;
+}
+
+.cmp-icon-btn {
+  border: none;
+  background: transparent;
+  color: var(--cmp-text-dim);
+  font-size: 15px;
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 6px;
+}
+.cmp-icon-btn:hover { background: var(--cmp-bg-soft); color: var(--cmp-text); }
+
+.cmp-row { padding: 10px 16px; border-bottom: 1px solid var(--cmp-border); }
+
+/* ---------- search ---------- */
+.cmp-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--cmp-bg-soft);
+  border: 1px solid var(--cmp-border);
+  border-radius: 8px;
+  padding: 6px 10px;
+}
+.cmp-search:focus-within { border-color: var(--cmp-accent); }
+.cmp-search-icon { font-size: 12px; opacity: 0.65; }
+.cmp-search-input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--cmp-text);
+  font-size: 14px;
+  font-family: inherit;
+}
+.cmp-search-input::-webkit-search-cancel-button { display: none; }
+.cmp-clear {
+  border: none;
+  background: transparent;
+  color: var(--cmp-text-dim);
+  cursor: pointer;
+  font-size: 12px;
+  padding: 2px 4px;
+}
+.cmp-clear:hover { color: var(--cmp-text); }
+
+/* ---------- sort / filter ---------- */
+.cmp-controls { display: flex; gap: 10px; }
+.cmp-field { flex: 1; display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.cmp-field-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--cmp-text-dim);
+}
+.cmp-select {
+  width: 100%;
+  padding: 6px 8px;
+  border-radius: 7px;
+  border: 1px solid var(--cmp-border);
+  background: var(--cmp-bg-soft);
+  color: var(--cmp-text);
+  font-size: 13px;
+  font-family: inherit;
+  cursor: pointer;
+}
+.cmp-select:focus { outline: none; border-color: var(--cmp-accent); }
+
+/* ---------- bulk row ---------- */
+.cmp-bulk { display: flex; align-items: center; gap: 8px; }
+.cmp-count { margin-left: auto; font-size: 12px; color: var(--cmp-text-dim); }
+
+/* ---------- buttons ---------- */
+.cmp-btn {
+  border-radius: 7px;
+  padding: 6px 12px;
+  font-size: 13px;
+  font-family: inherit;
+  cursor: pointer;
+  border: 1px solid var(--cmp-border);
+  background: var(--cmp-bg-soft);
+  color: var(--cmp-text);
+  transition: background 0.12s ease;
+}
+.cmp-btn:hover:not(:disabled) { background: var(--cmp-border); }
+.cmp-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.cmp-btn-ghost { background: transparent; }
+.cmp-btn-danger {
+  background: var(--cmp-danger);
+  border-color: var(--cmp-danger);
+  color: #fff;
+  font-weight: 500;
+}
+.cmp-btn-danger:hover:not(:disabled) {
+  background: var(--cmp-danger-hover);
+  border-color: var(--cmp-danger-hover);
+}
+.cmp-hidden { display: none; }
+
+/* ---------- list ---------- */
+.cmp-list { flex: 1; overflow-y: auto; overscroll-behavior: contain; }
+
+.cmp-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 16px;
+  border-bottom: 1px solid var(--cmp-border);
+  cursor: pointer;
+  user-select: none;
+}
+.cmp-item:hover { background: var(--cmp-bg-soft); }
+.cmp-item.cmp-selected { background: var(--cmp-selected); }
+
+.cmp-checkbox {
+  width: 18px;
+  height: 18px;
+  flex: none;
+  accent-color: var(--cmp-accent);
+  cursor: pointer;
+  margin: 0;
+}
+
+.cmp-item-body { flex: 1; min-width: 0; }
+.cmp-item-title {
+  font-size: 13.5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.cmp-item-meta { font-size: 11.5px; color: var(--cmp-text-dim); margin-top: 1px; }
+
+.cmp-open-link {
+  flex: none;
+  color: var(--cmp-text-dim);
+  text-decoration: none;
+  font-size: 12px;
+  padding: 4px 6px;
+  border-radius: 6px;
+  opacity: 0;
+}
+.cmp-item:hover .cmp-open-link { opacity: 1; }
+.cmp-open-link:hover { color: var(--cmp-accent); background: var(--cmp-bg); }
+
+/* ---------- empty / notice states ---------- */
+.cmp-empty { padding: 32px 20px; text-align: center; color: var(--cmp-text-dim); font-size: 13px; }
+.cmp-empty-title { font-weight: 600; color: var(--cmp-text); margin-bottom: 6px; }
+.cmp-hint { margin-top: 8px; font-size: 12px; opacity: 0.8; }
+.cmp-notice {
+  padding: 9px 16px;
+  font-size: 12px;
+  color: var(--cmp-text-dim);
+  background: var(--cmp-bg-soft);
+  border-bottom: 1px solid var(--cmp-border);
+}
+
+/* ---------- footer ---------- */
+.cmp-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 12px 16px;
+  border-top: 1px solid var(--cmp-border);
+  background: var(--cmp-bg);
+}
+
+/* ---------- confirm modal ---------- */
+.cmp-modal-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  pointer-events: auto;
+}
+.cmp-modal {
+  width: min(420px, 100%);
+  background: var(--cmp-bg);
+  border: 1px solid var(--cmp-border);
+  border-radius: var(--cmp-radius);
+  box-shadow: var(--cmp-shadow);
+  padding: 20px;
+}
+.cmp-modal-title { font-size: 16px; font-weight: 600; margin-bottom: 4px; }
+.cmp-modal-sub { font-size: 13px; color: var(--cmp-text-dim); margin-bottom: 12px; }
+.cmp-modal-list {
+  max-height: 190px;
+  overflow-y: auto;
+  border: 1px solid var(--cmp-border);
+  border-radius: 8px;
+  background: var(--cmp-bg-soft);
+  padding: 6px 0;
+  margin-bottom: 12px;
+}
+.cmp-modal-item {
+  padding: 4px 12px;
+  font-size: 12.5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--cmp-text-dim);
+}
+.cmp-modal-check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12.5px;
+  color: var(--cmp-text-dim);
+  margin-bottom: 16px;
+  cursor: pointer;
+}
+.cmp-modal-check input { accent-color: var(--cmp-accent); margin: 0; }
+.cmp-modal-actions { display: flex; justify-content: flex-end; gap: 8px; }
+
+/* ---------- toasts ---------- */
+.cmp-toast {
+  position: absolute;
+  bottom: 22px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 14px;
+  border-radius: 9px;
+  background: var(--cmp-bg);
+  border: 1px solid var(--cmp-border);
+  box-shadow: var(--cmp-shadow);
+  font-size: 13px;
+  pointer-events: auto;
+  max-width: calc(100vw - 40px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cmp-panel, .cmp-fab { transition: none; }
+}
+
+/* ==========================================================================
+ * PRIVACY BLUR
+ *
+ * Blurs sensitive content until you hover it, for working in public.
+ *
+ * Implemented purely as CSS driven by classes on <html>. The content script
+ * only toggles those classes — it never touches the page's DOM. That means
+ * dynamically rendered messages are covered automatically with no
+ * MutationObserver, no re-render cost, and nothing for a page CSP to block.
+ *
+ * >>> THIS BLOCK IS THE SINGLE PLACE TO FIX IF THE SITE'S MARKUP CHANGES. <<<
+ * Each target lists several candidate selectors, so one rename does not
+ * disable the feature. Add a new candidate rather than replacing the list.
+ * ========================================================================== */
+
+/* Blur strength, chosen in the popup. */
+html.cmp-blur-light  { --cmp-blur: 4px; }
+html.cmp-blur-medium { --cmp-blur: 7px; }
+html.cmp-blur-heavy  { --cmp-blur: 12px; }
+
+/* --- chat titles: sidebar list, and our own panel ------------------------ */
+html.cmp-privacy-on.cmp-blur-titles :is(
+  a[href^="/chat/"]:not([href$="/"]),
+  a[href^="/cowork/"]:not([href$="/"]),
+  a[href^="/code/"]:not([href$="/"]),
+  a[href^="/project/"]:not([href$="/"]),
+  a[href^="/projects/"]:not([href$="/"]),
+  a[href^="/artifacts/"]:not([href$="/"]),
+  a[href^="/recents/"]:not([href$="/"]),
+  a[href^="/c/"]:not([href$="/"]),
+  a[href^="/g/"]:not([href$="/"]),
+  a[href^="/app/"]:not([href$="/"]),
+  [data-test-id="conversation"],
+  .conversation-title,
+  .conversation,
+  .cmp-item-title
+) {
+  filter: blur(var(--cmp-blur, 7px));
+  transition: filter 0.12s ease;
+}
+
+/* --- conversation messages ---------------------------------------------- */
+html.cmp-privacy-on.cmp-blur-messages :is(
+  [data-testid="user-message"],
+  [data-testid="assistant-message"],
+  [data-testid="chat-message"],
+  .font-claude-message,
+  main .prose,
+  [data-message-author-role],
+  [data-testid^="conversation-turn"],
+  main .markdown,
+  message-content,
+  .model-response-text,
+  user-query-content,
+  .query-text
+) {
+  filter: blur(var(--cmp-blur, 7px));
+  transition: filter 0.12s ease;
+}
+
+/* --- images, files and other media --------------------------------------- */
+html.cmp-privacy-on.cmp-blur-media :is(
+  main img,
+  main video,
+  main canvas,
+  [data-testid="file-thumbnail"]
+) {
+  filter: blur(var(--cmp-blur, 7px));
+  transition: filter 0.12s ease;
+}
+
+/* --- the message composer, so onlookers cannot read what you type --------- */
+html.cmp-privacy-on.cmp-blur-input :is(
+  main [contenteditable="true"],
+  main .ProseMirror,
+  main textarea,
+  [data-testid="chat-input"],
+  fieldset [contenteditable="true"],
+  #prompt-textarea,
+  #composer-background [contenteditable="true"],
+  rich-textarea,
+  .ql-editor
+) {
+  filter: blur(var(--cmp-blur, 7px));
+  transition: filter 0.12s ease;
+}
+
+/* --- account name, email and avatar -------------------------------------- */
+html.cmp-privacy-on.cmp-blur-account :is(
+  [data-testid="user-menu-button"],
+  [data-testid="account-menu"],
+  nav footer,
+  aside footer,
+  [data-testid="profile-button"],
+  [data-testid="accounts-profile-button"],
+  .user-name,
+  [aria-label^="Google Account"]
+) {
+  filter: blur(var(--cmp-blur, 7px));
+  transition: filter 0.12s ease;
+}
+
+/* --- reveal on hover ----------------------------------------------------- */
+html.cmp-privacy-on.cmp-reveal-hover :is(
+  a[href^="/chat/"]:not([href$="/"]),
+  a[href^="/cowork/"]:not([href$="/"]),
+  a[href^="/code/"]:not([href$="/"]),
+  a[href^="/project/"]:not([href$="/"]),
+  a[href^="/projects/"]:not([href$="/"]),
+  a[href^="/artifacts/"]:not([href$="/"]),
+  a[href^="/recents/"]:not([href$="/"]),
+  a[href^="/c/"]:not([href$="/"]),
+  a[href^="/g/"]:not([href$="/"]),
+  a[href^="/app/"]:not([href$="/"]),
+  [data-test-id="conversation"],
+  .conversation-title,
+  .conversation,
+  .cmp-item-title,
+  [data-testid="user-message"],
+  [data-testid="assistant-message"],
+  [data-testid="chat-message"],
+  .font-claude-message,
+  main .prose,
+  main img,
+  main video,
+  main canvas,
+  [data-testid="file-thumbnail"],
+  [data-testid="user-menu-button"],
+  [data-testid="account-menu"],
+  nav footer,
+  aside footer,
+  main [contenteditable="true"],
+  main .ProseMirror,
+  main textarea,
+  [data-testid="chat-input"],
+  fieldset [contenteditable="true"],
+  [data-message-author-role],
+  [data-testid^="conversation-turn"],
+  main .markdown,
+  #prompt-textarea,
+  #composer-background [contenteditable="true"],
+  [data-testid="profile-button"],
+  [data-testid="accounts-profile-button"],
+  message-content,
+  .model-response-text,
+  user-query-content,
+  .query-text,
+  rich-textarea,
+  .ql-editor,
+  .user-name,
+  [aria-label^="Google Account"]
+):hover {
+  filter: none;
+}
+
+/* A blurred row in our panel must still show its own hover reveal. */
+html.cmp-privacy-on.cmp-reveal-hover .cmp-item:hover .cmp-item-title { filter: none; }
+
+/* The panel's own controls are never blurred — you have to be able to use it. */
+#cmp-root .cmp-open-link,
+#cmp-root .cmp-btn,
+#cmp-root .cmp-select,
+#cmp-root .cmp-search-input,
+#cmp-root .cmp-title { filter: none !important; }
+
+/* Header eye toggle */
+.cmp-eye { font-size: 14px; }
+.cmp-eye.cmp-eye-active { color: var(--cmp-accent); }
+
+@media (prefers-reduced-motion: reduce) {
+  html.cmp-privacy-on :is(nav a, aside a, li a, main .prose, main img) { transition: none; }
+}
+
+.cmp-header-actions { display: flex; align-items: center; gap: 2px; flex: none; }
+
+/* ==========================================================================
+ * SCREEN LOCK
+ *
+ * Two independent layers, so a failure in either still hides your screen:
+ *   1. `html.cmp-locked` heavily blurs everything the page rendered. This is
+ *      applied from CSS at document_start, before the overlay can exist.
+ *   2. An effectively opaque overlay painted on top.
+ * ========================================================================== */
+
+html.cmp-locked body > *:not(#cmp-root) {
+  filter: blur(22px) !important;
+  pointer-events: none !important;
+  user-select: none !important;
+}
+
+.cmp-lock {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  pointer-events: auto;
+  background: var(--cmp-bg);
+  -webkit-backdrop-filter: blur(24px);
+  backdrop-filter: blur(24px);
+}
+
+.cmp-lock-card {
+  width: min(320px, 100%);
+  text-align: center;
+  background: var(--cmp-bg);
+  border: 1px solid var(--cmp-border);
+  border-radius: var(--cmp-radius);
+  box-shadow: var(--cmp-shadow);
+  padding: 26px 22px;
+}
+
+.cmp-lock-icon { font-size: 26px; line-height: 1; margin-bottom: 10px; }
+.cmp-lock-title { font-size: 16px; font-weight: 600; margin-bottom: 4px; }
+.cmp-lock-sub { font-size: 12.5px; color: var(--cmp-text-dim); margin-bottom: 16px; }
+
+.cmp-lock-input {
+  width: 100%;
+  padding: 9px 11px;
+  margin-bottom: 10px;
+  border-radius: 8px;
+  border: 1px solid var(--cmp-border);
+  background: var(--cmp-bg-soft);
+  color: var(--cmp-text);
+  font-family: inherit;
+  font-size: 14px;
+  text-align: center;
+}
+.cmp-lock-input:focus { outline: none; border-color: var(--cmp-accent); }
+
+.cmp-lock-btn {
+  width: 100%;
+  padding: 9px 12px;
+  border: none;
+  border-radius: 8px;
+  background: var(--cmp-accent);
+  color: #fff;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+}
+.cmp-lock-btn:disabled { opacity: 0.6; cursor: progress; }
+
+.cmp-lock-error {
+  margin-top: 10px;
+  font-size: 12px;
+  color: var(--cmp-danger);
+  min-height: 16px;
+}
+.cmp-lock-card.cmp-shake { animation: cmp-shake 0.3s ease; }
+
+@keyframes cmp-shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-6px); }
+  75% { transform: translateX(6px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cmp-lock-card.cmp-shake { animation: none; }
+}
+
+/* Which site the panel is attached to — useful when several tabs are open. */
+.cmp-site {
+  font-size: 11px;
+  padding: 2px 7px;
+  border-radius: 99px;
+  background: var(--cmp-bg-soft);
+  border: 1px solid var(--cmp-border);
+  color: var(--cmp-text-dim);
+  white-space: nowrap;
+}
+
+/* Shown instead of the delete button on sites that cannot support it. */
+.cmp-footer-note {
+  font-size: 11.5px;
+  line-height: 1.4;
+  color: var(--cmp-text-dim);
+  text-align: right;
+  max-width: 260px;
+}
+
+
+/* ==========================================================================
+ * CHAT LIST READABILITY
+ *
+ * Font, size, density and accent for the chat titles you are managing —
+ * in the site's own sidebar and in our panel.
+ *
+ * Every rule is opt-in: the default choice adds no class at all, so an
+ * untouched install changes nothing on the page.
+ *
+ * Three things these rules need that a naive version would miss:
+ *   !important   — the blur sets `filter`, which these sites never touch.
+ *                  font-family, font-size and color they set constantly.
+ *   descendants  — a sidebar entry is usually <a><div>Title</div></a>, and a
+ *                  child that sets its own size or colour would otherwise win.
+ *   no indexes   — :not([href$="/"]) keeps navigation destinations such as
+ *                  /projects/ out of the chat-title rules.
+ *
+ * The selector list is GENERATED FROM the PRIVACY BLUR titles rule above.
+ * Adding a site there and regenerating covers blur and appearance together.
+ * ========================================================================== */
+
+/* --- font ---------------------------------------------------------------- */
+html.cmp-font-serif :is(
+  a[href^="/chat/"]:not([href$="/"]),
+  a[href^="/cowork/"]:not([href$="/"]),
+  a[href^="/code/"]:not([href$="/"]),
+  a[href^="/project/"]:not([href$="/"]),
+  a[href^="/projects/"]:not([href$="/"]),
+  a[href^="/artifacts/"]:not([href$="/"]),
+  a[href^="/recents/"]:not([href$="/"]),
+  a[href^="/c/"]:not([href$="/"]),
+  a[href^="/g/"]:not([href$="/"]),
+  a[href^="/app/"]:not([href$="/"]),
+  [data-test-id="conversation"],
+  .conversation-title,
+  .conversation,
+  .cmp-item-title
+),
+html.cmp-font-serif :is(
+  a[href^="/chat/"]:not([href$="/"]),
+  a[href^="/cowork/"]:not([href$="/"]),
+  a[href^="/code/"]:not([href$="/"]),
+  a[href^="/project/"]:not([href$="/"]),
+  a[href^="/projects/"]:not([href$="/"]),
+  a[href^="/artifacts/"]:not([href$="/"]),
+  a[href^="/recents/"]:not([href$="/"]),
+  a[href^="/c/"]:not([href$="/"]),
+  a[href^="/g/"]:not([href$="/"]),
+  a[href^="/app/"]:not([href$="/"]),
+  [data-test-id="conversation"],
+  .conversation-title,
+  .conversation,
+  .cmp-item-title
+) * {
+  font-family: ui-serif, Georgia, "Times New Roman", serif !important;
+}
+
+html.cmp-font-mono :is(
+  a[href^="/chat/"]:not([href$="/"]),
+  a[href^="/cowork/"]:not([href$="/"]),
+  a[href^="/code/"]:not([href$="/"]),
+  a[href^="/project/"]:not([href$="/"]),
+  a[href^="/projects/"]:not([href$="/"]),
+  a[href^="/artifacts/"]:not([href$="/"]),
+  a[href^="/recents/"]:not([href$="/"]),
+  a[href^="/c/"]:not([href$="/"]),
+  a[href^="/g/"]:not([href$="/"]),
+  a[href^="/app/"]:not([href$="/"]),
+  [data-test-id="conversation"],
+  .conversation-title,
+  .conversation,
+  .cmp-item-title
+),
+html.cmp-font-mono :is(
+  a[href^="/chat/"]:not([href$="/"]),
+  a[href^="/cowork/"]:not([href$="/"]),
+  a[href^="/code/"]:not([href$="/"]),
+  a[href^="/project/"]:not([href$="/"]),
+  a[href^="/projects/"]:not([href$="/"]),
+  a[href^="/artifacts/"]:not([href$="/"]),
+  a[href^="/recents/"]:not([href$="/"]),
+  a[href^="/c/"]:not([href$="/"]),
+  a[href^="/g/"]:not([href$="/"]),
+  a[href^="/app/"]:not([href$="/"]),
+  [data-test-id="conversation"],
+  .conversation-title,
+  .conversation,
+  .cmp-item-title
+) * {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace !important;
+  letter-spacing: -0.01em !important;
+}
+
+/* --- size ---------------------------------------------------------------- */
+html.cmp-size-small :is(
+  a[href^="/chat/"]:not([href$="/"]),
+  a[href^="/cowork/"]:not([href$="/"]),
+  a[href^="/code/"]:not([href$="/"]),
+  a[href^="/project/"]:not([href$="/"]),
+  a[href^="/projects/"]:not([href$="/"]),
+  a[href^="/artifacts/"]:not([href$="/"]),
+  a[href^="/recents/"]:not([href$="/"]),
+  a[href^="/c/"]:not([href$="/"]),
+  a[href^="/g/"]:not([href$="/"]),
+  a[href^="/app/"]:not([href$="/"]),
+  [data-test-id="conversation"],
+  .conversation-title,
+  .conversation,
+  .cmp-item-title
+),
+html.cmp-size-small :is(
+  a[href^="/chat/"]:not([href$="/"]),
+  a[href^="/cowork/"]:not([href$="/"]),
+  a[href^="/code/"]:not([href$="/"]),
+  a[href^="/project/"]:not([href$="/"]),
+  a[href^="/projects/"]:not([href$="/"]),
+  a[href^="/artifacts/"]:not([href$="/"]),
+  a[href^="/recents/"]:not([href$="/"]),
+  a[href^="/c/"]:not([href$="/"]),
+  a[href^="/g/"]:not([href$="/"]),
+  a[href^="/app/"]:not([href$="/"]),
+  [data-test-id="conversation"],
+  .conversation-title,
+  .conversation,
+  .cmp-item-title
+) * {
+  font-size: 12px !important;
+}
+
+html.cmp-size-large :is(
+  a[href^="/chat/"]:not([href$="/"]),
+  a[href^="/cowork/"]:not([href$="/"]),
+  a[href^="/code/"]:not([href$="/"]),
+  a[href^="/project/"]:not([href$="/"]),
+  a[href^="/projects/"]:not([href$="/"]),
+  a[href^="/artifacts/"]:not([href$="/"]),
+  a[href^="/recents/"]:not([href$="/"]),
+  a[href^="/c/"]:not([href$="/"]),
+  a[href^="/g/"]:not([href$="/"]),
+  a[href^="/app/"]:not([href$="/"]),
+  [data-test-id="conversation"],
+  .conversation-title,
+  .conversation,
+  .cmp-item-title
+),
+html.cmp-size-large :is(
+  a[href^="/chat/"]:not([href$="/"]),
+  a[href^="/cowork/"]:not([href$="/"]),
+  a[href^="/code/"]:not([href$="/"]),
+  a[href^="/project/"]:not([href$="/"]),
+  a[href^="/projects/"]:not([href$="/"]),
+  a[href^="/artifacts/"]:not([href$="/"]),
+  a[href^="/recents/"]:not([href$="/"]),
+  a[href^="/c/"]:not([href$="/"]),
+  a[href^="/g/"]:not([href$="/"]),
+  a[href^="/app/"]:not([href$="/"]),
+  [data-test-id="conversation"],
+  .conversation-title,
+  .conversation,
+  .cmp-item-title
+) * {
+  font-size: 15.5px !important;
+}
+
+/* --- density -------------------------------------------------------------- */
+/* Padding belongs to the row, never to what is inside it. */
+html.cmp-density-compact :is(
+  a[href^="/chat/"]:not([href$="/"]),
+  a[href^="/cowork/"]:not([href$="/"]),
+  a[href^="/code/"]:not([href$="/"]),
+  a[href^="/project/"]:not([href$="/"]),
+  a[href^="/projects/"]:not([href$="/"]),
+  a[href^="/artifacts/"]:not([href$="/"]),
+  a[href^="/recents/"]:not([href$="/"]),
+  a[href^="/c/"]:not([href$="/"]),
+  a[href^="/g/"]:not([href$="/"]),
+  a[href^="/app/"]:not([href$="/"]),
+  [data-test-id="conversation"],
+  .conversation-title,
+  .conversation,
+  .cmp-item-title
+) {
+  padding-top: 2px !important;
+  padding-bottom: 2px !important;
+  line-height: 1.25 !important;
+}
+
+html.cmp-density-compact #cmp-root .cmp-item {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+/* --- accent --------------------------------------------------------------- */
+/* Setting --cmp-accent-user also re-tints the panel, because #cmp-root reads
+   it as the fallback source for --cmp-accent. */
+html.cmp-accent-blue { --cmp-accent-user: #3b6fd4; }
+html.cmp-accent-teal { --cmp-accent-user: #2a9d8f; }
+html.cmp-accent-violet { --cmp-accent-user: #7c5cd6; }
+html.cmp-accent-amber { --cmp-accent-user: #c07d1f; }
+html.cmp-accent-rose { --cmp-accent-user: #cf5566; }
+html.cmp-accent-slate { --cmp-accent-user: #5b6b7c; }
+
+html:is(.cmp-accent-blue, .cmp-accent-teal, .cmp-accent-violet, .cmp-accent-amber, .cmp-accent-rose, .cmp-accent-slate) :is(
+  a[href^="/chat/"]:not([href$="/"]),
+  a[href^="/cowork/"]:not([href$="/"]),
+  a[href^="/code/"]:not([href$="/"]),
+  a[href^="/project/"]:not([href$="/"]),
+  a[href^="/projects/"]:not([href$="/"]),
+  a[href^="/artifacts/"]:not([href$="/"]),
+  a[href^="/recents/"]:not([href$="/"]),
+  a[href^="/c/"]:not([href$="/"]),
+  a[href^="/g/"]:not([href$="/"]),
+  a[href^="/app/"]:not([href$="/"]),
+  [data-test-id="conversation"],
+  .conversation-title,
+  .conversation,
+  .cmp-item-title
+),
+html:is(.cmp-accent-blue, .cmp-accent-teal, .cmp-accent-violet, .cmp-accent-amber, .cmp-accent-rose, .cmp-accent-slate) :is(
+  a[href^="/chat/"]:not([href$="/"]),
+  a[href^="/cowork/"]:not([href$="/"]),
+  a[href^="/code/"]:not([href$="/"]),
+  a[href^="/project/"]:not([href$="/"]),
+  a[href^="/projects/"]:not([href$="/"]),
+  a[href^="/artifacts/"]:not([href$="/"]),
+  a[href^="/recents/"]:not([href$="/"]),
+  a[href^="/c/"]:not([href$="/"]),
+  a[href^="/g/"]:not([href$="/"]),
+  a[href^="/app/"]:not([href$="/"]),
+  [data-test-id="conversation"],
+  .conversation-title,
+  .conversation,
+  .cmp-item-title
+) * {
+  color: var(--cmp-accent-user) !important;
+}
+
+/* ==========================================================================
+ * VISION SIMULATORS
+ *
+ * Colour-blindness simulation needs a real colour matrix, which CSS filters
+ * cannot express — so content.js injects a hidden <svg> of <feColorMatrix>
+ * filters into #cmp-root and these rules reference them by id.
+ *
+ * The filter is applied to the site's own content and NOT to #cmp-root, for
+ * two reasons: our controls must stay true-colour so you can read them, and
+ * a `filter` on an ancestor turns it into the containing block for
+ * position:fixed descendants — which would break the panel.
+ *
+ * Only one simulation can be active at a time; the popup enforces that.
+ * ========================================================================== */
+
+html.cmp-cb-protanopia    body > *:not(#cmp-root) { filter: url(#cmp-f-protanopia); }
+html.cmp-cb-deuteranopia  body > *:not(#cmp-root) { filter: url(#cmp-f-deuteranopia); }
+html.cmp-cb-tritanopia    body > *:not(#cmp-root) { filter: url(#cmp-f-tritanopia); }
+html.cmp-cb-achromatopsia body > *:not(#cmp-root) { filter: url(#cmp-f-achromatopsia); }
+
+.cmp-filters {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+#cmp-root{position:absolute !important;inset:0 !important}</style>
+<div id="cmp-root" class="cmp-root cmp-open">
+ <aside class="cmp-panel">
+  <div class="cmp-header"><div class="cmp-title-wrap"><span class="cmp-title">Chat Manager Pro</span>
+   </div><div class="cmp-header-actions">
+   <button class="cmp-icon-btn cmp-eye">&#128065;</button>
+   <button class="cmp-icon-btn">&#128274;</button><button class="cmp-icon-btn">&#10005;</button></div></div>
+  <div class="cmp-row cmp-search-row"><div class="cmp-search"><span class="cmp-search-icon">&#128269;</span>
+   <input class="cmp-search-input" placeholder="Search chats&hellip;"><button class="cmp-clear">&#10005;</button></div></div>
+  <div class="cmp-row cmp-controls">
+   <label class="cmp-field"><span class="cmp-field-label">Sort</span><select class="cmp-select"><option>Newest first</option></select></label>
+   <label class="cmp-field"><span class="cmp-field-label">Filter</span><select class="cmp-select"><option>All</option></select></label></div>
+  <div class="cmp-row cmp-bulk"><button class="cmp-btn cmp-btn-ghost">Select all</button>
+   <button class="cmp-btn cmp-btn-ghost">None</button><span class="cmp-count">0 selected &middot; 12 shown</span></div>
+  <div class="cmp-list"><div class="cmp-item"><input type="checkbox" class="cmp-checkbox"><div class="cmp-item-body"><div class="cmp-item-title blurred">Quarterly planning notes</div><div class="cmp-item-meta">Today</div></div></div><div class="cmp-item"><input type="checkbox" class="cmp-checkbox"><div class="cmp-item-body"><div class="cmp-item-title blurred">Refactor the billing module</div><div class="cmp-item-meta">Today</div></div></div><div class="cmp-item"><input type="checkbox" class="cmp-checkbox"><div class="cmp-item-body"><div class="cmp-item-title blurred">Trip itinerary for March</div><div class="cmp-item-meta">Yesterday</div></div></div><div class="cmp-item"><input type="checkbox" class="cmp-checkbox"><div class="cmp-item-body"><div class="cmp-item-title">Recipe ideas for the weekend</div><div class="cmp-item-meta">3 days ago</div></div></div><div class="cmp-item"><input type="checkbox" class="cmp-checkbox"><div class="cmp-item-body"><div class="cmp-item-title blurred">Draft reply to the landlord</div><div class="cmp-item-meta">5 days ago</div></div></div><div class="cmp-item"><input type="checkbox" class="cmp-checkbox"><div class="cmp-item-body"><div class="cmp-item-title blurred">SQL join explanation</div><div class="cmp-item-meta">6 days ago</div></div></div><div class="cmp-item"><input type="checkbox" class="cmp-checkbox"><div class="cmp-item-body"><div class="cmp-item-title blurred">Book recommendations</div><div class="cmp-item-meta">Last week</div></div></div><div class="cmp-item"><input type="checkbox" class="cmp-checkbox"><div class="cmp-item-body"><div class="cmp-item-title blurred">Interview prep questions</div><div class="cmp-item-meta">Last week</div></div></div><div class="cmp-item"><input type="checkbox" class="cmp-checkbox"><div class="cmp-item-body"><div class="cmp-item-title blurred">Budget spreadsheet formulas</div><div class="cmp-item-meta">12 Aug 2026</div></div></div></div>
+  <div class="cmp-footer"><button class="cmp-btn cmp-btn-ghost">Refresh</button></div>
+ </aside></div></div>
+</body></html>
