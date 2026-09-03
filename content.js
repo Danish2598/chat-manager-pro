@@ -28,6 +28,7 @@
 
   const PREFS_KEY = 'cmp.prefs';
   const SIGNAL_KEY = 'cmp.toggleSignal';
+  const ACK_KEY = 'cmp.toggleAck';
   const PRIVACY_KEY = 'cmp.privacy';
   const PRIVACY_SIGNAL = 'cmp.privacySignal';
   const LOCK_KEY = 'cmp.lock';
@@ -1024,7 +1025,22 @@
   try {
     chrome.storage.onChanged.addListener((changes, area) => {
       if (area !== 'local') return;
-      if (changes[SIGNAL_KEY]) togglePanel();
+      if (changes[SIGNAL_KEY] && changes[SIGNAL_KEY].newValue) {
+        // Answer the popup either way. Without an acknowledgement a failure to
+        // open is silent, which is indistinguishable from the extension not
+        // being installed at all.
+        if (active) togglePanel();
+        try {
+          chrome.storage.local.set({
+            [ACK_KEY]: {
+              ts: changes[SIGNAL_KEY].newValue,
+              site: SITE.id,
+              active,
+              ready: Boolean(root),
+            },
+          });
+        } catch { /* extension context gone */ }
+      }
       if (changes[SITES_KEY] && changes[SITES_KEY].newValue) {
         Object.assign(siteEnabled, changes[SITES_KEY].newValue);
         applyEnabled();

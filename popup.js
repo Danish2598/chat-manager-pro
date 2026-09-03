@@ -15,6 +15,7 @@ const SITES_KEY = 'cmp.sites';
 const THEME_KEY = 'cmp.theme';
 const VISION_KEY = 'cmp.vision';
 const SIGNAL_KEY = 'cmp.toggleSignal';
+const ACK_KEY = 'cmp.toggleAck';
 const LOCK_SIGNAL = 'cmp.lockSignal';
 
 const SITES_DEFAULTS = { claude: true, chatgpt: true, gemini: true };
@@ -234,10 +235,52 @@ CB.forEach((node) => node.addEventListener('click', () => {
 }));
 
 /* ---------- launch ---------- */
-// Writing a changing value fires storage.onChanged in the content script,
-// which toggles the panel. The timestamp guarantees the value always differs.
+const SITE_LABEL = { claude: 'Claude', chatgpt: 'ChatGPT', gemini: 'Gemini' };
+const openMsg = $('open-msg');
+
+/**
+ * Writing a changing value fires storage.onChanged in the content script,
+ * which opens the panel. The content script writes back an acknowledgement,
+ * so a request that reaches nobody can be reported instead of vanishing.
+ */
 openBtn.addEventListener('click', () => {
-  chrome.storage.local.set({ [SIGNAL_KEY]: Date.now() }, () => window.close());
+  const ts = Date.now();
+  let answered = false;
+  openMsg.textContent = '';
+  openMsg.classList.remove('msg-error');
+
+  const onAck = (changes, area) => {
+    if (area !== 'local') return;
+    const ack = changes[ACK_KEY] && changes[ACK_KEY].newValue;
+    if (!ack || ack.ts !== ts) return;
+    answered = true;
+    chrome.storage.onChanged.removeListener(onAck);
+
+    if (ack.active && ack.ready) {
+      window.close();
+    } else if (!ack.active) {
+      const name = SITE_LABEL[ack.site] || ack.site;
+      fail(`${name} is switched off under Sites. Turn it on to use the panel here.`);
+    } else {
+      fail('The page is still loading. Try again in a moment.');
+    }
+  };
+
+  const fail = (text) => {
+    openMsg.textContent = text;
+    openMsg.classList.add('msg-error');
+  };
+
+  chrome.storage.onChanged.addListener(onAck);
+  chrome.storage.local.set({ [SIGNAL_KEY]: ts });
+
+  setTimeout(() => {
+    if (answered) return;
+    chrome.storage.onChanged.removeListener(onAck);
+    fail('No supported tab answered. Open Claude, ChatGPT or Gemini — and '
+       + 'reload that tab if it was already open when you installed or '
+       + 'updated the extension.');
+  }, 500);
 });
 
 /* ---------- load ---------- */

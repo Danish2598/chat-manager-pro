@@ -300,7 +300,17 @@ is the one thing that cannot be verified from the source alone.
 
 ## Troubleshooting
 
-**Panel doesn't appear.** Reload the claude.ai tab — content scripts only inject
+**"Open manager panel" reports a problem.** The button waits for the content
+script to acknowledge the request and tells you what happened rather than
+failing silently:
+
+| Message | Meaning |
+|---|---|
+| *No supported tab answered* | Not on a supported site, or that tab has no content script yet — reload it |
+| *&lt;Site&gt; is switched off under Sites* | Turn it back on in the popup |
+| *The page is still loading* | The script is running but the panel is not built yet; try again |
+
+**Panel doesn't appear.** Reload the tab — content scripts only inject
 on page load, so a tab open from before you installed the extension won't have it.
 
 **"Could not read your chat list."** You're probably signed out, or the tab isn't
