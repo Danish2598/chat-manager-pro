@@ -1,12 +1,12 @@
 # Chat Manager Pro
 
-*Store listing name: **Chat Manager Pro – Bulk Delete & Privacy for Claude**.
+*Store listing name: **Chat Manager Pro – Bulk Delete & Privacy for Claude & ChatGPT**.
 The longer name carries the search keywords; the toolbar tooltip and this repo
 stay on the short one.*
 
 A Chrome extension (Manifest V3) that adds search, sorting, date filtering,
 multi-select, safe bulk deletion, a privacy blur and a screen lock to your
-Claude.ai chat list.
+Claude.ai **and ChatGPT** chat lists.
 
 It injects a slide-out panel into the page rather than cramming a chat manager
 into a 280px toolbar popup, so managing two hundred conversations is actually
@@ -119,6 +119,22 @@ Press <kbd>Esc</kbd> to close the panel.
 
 ---
 
+## Supported sites
+
+| Site | Hosts | Conversation routes |
+|---|---|---|
+| Claude | `claude.ai` | `/chat/`, `/cowork/`, `/code/` |
+| ChatGPT | `chatgpt.com`, `chat.openai.com` | `/c/`, `/g/` |
+
+Adding another site means adding **one object to `sites.js`** — an id, a host
+pattern, a link selector, and `list()` / `remove()`. Nothing in `content.js`
+changes; it is site-agnostic and never names a site directly.
+
+A note on Gemini, which is the obvious next candidate: it does not expose
+ordinary REST endpoints the way these two do. Its conversation list goes through
+Google's internal `batchexecute` RPC, so it is a materially harder problem and
+should be scoped before being promised anywhere.
+
 ## How it reads your chats
 
 Two tiers, chosen automatically:
@@ -155,7 +171,8 @@ permission is the entire ask.
 
 ```
 manifest.json     Extension config (MV3)
-content.js        Panel, data layer, selection, delete pipeline, blur, lock
+content.js        Site-agnostic panel, selection, delete pipeline, blur, lock
+sites.js          Per-site adapters (Claude, ChatGPT) — all site knowledge
 lock-crypto.js    PBKDF2 password hashing, shared by popup and content script
 content.css       Panel styling + privacy blur + lock overlay (light + dark)
 popup.html/js/css Thin launcher and default preferences

@@ -1,15 +1,17 @@
 /**
  * Chat Manager Pro — content script
  *
- * Injects a management panel into claude.ai: search, sort, date filter,
- * multi-select and rate-limited bulk delete with an undo window.
+ * Injects a management panel into supported chat sites: search, sort, date
+ * filter, multi-select and rate-limited bulk delete with an undo window.
  *
- * Data layer is deliberately two-tier:
- *   1. API mode  — reads the conversation list from the site's own endpoints.
- *                  Gives real timestamps, the full list, and fast deletes.
+ * This file is site-agnostic. Every endpoint and conversation-link selector
+ * lives in sites.js, which resolves one adapter per host.
+ *
+ * The data layer is deliberately two-tier:
+ *   1. API mode  — the adapter reads the site's own endpoints. Gives real
+ *                  timestamps, the full list, and fast deletes.
  *   2. DOM mode  — falls back to scraping sidebar links if the API shape
  *                  changes. Degraded (no timestamps) but not broken.
- * Every selector and endpoint lives in CFG so a site change is a one-line fix.
  */
 (() => {
   'use strict';
@@ -18,17 +20,11 @@
   window.__cmpLoaded = true;
 
   /* ------------------------------------------------------------------ *
-   * Configuration — the only place site-specific knowledge lives.
+   * Site adapter. Everything site-specific lives in sites.js; this file
+   * is shared across every supported site and never names one directly.
    * ------------------------------------------------------------------ */
-  const CFG = {
-    orgListUrl: '/api/organizations',
-    orgCookie: 'lastActiveOrg',
-    conversationsPath: (org) => `/api/organizations/${org}/chat_conversations`,
-    deletePath: (org, uuid) => `/api/organizations/${org}/chat_conversations/${uuid}`,
-    chatLinkSelector: 'a[href^="/chat/"], a[href^="/cowork/"], a[href^="/code/"]',
-    chatHrefPattern: /^\/(?:chat|cowork|code)\/([A-Za-z0-9_-]{8,})/i,
-    newChatUrl: '/new',
-  };
+  const SITE = window.cmpSite;
+  if (!SITE) return;   // not a site we support
 
   const PREFS_KEY = 'cmp.prefs';
   const SIGNAL_KEY = 'cmp.toggleSignal';
@@ -65,11 +61,6 @@
     if (className) node.className = className;
     if (text != null) node.textContent = text;
     return node;
-  }
-
-  function readCookie(name) {
-    const match = document.cookie.match(new RegExp('(?:^|; )' + name + '=([^;]*)'));
-    return match ? decodeURIComponent(match[1]) : null;
   }
 
   function formatDate(ts) {
@@ -292,93 +283,18 @@
     open: false,
   };
 
-  let orgId = null;
-
-  async function resolveOrg() {
-    if (orgId) return orgId;
-
-    const cookie = readCookie(CFG.orgCookie);
-    if (cookie) {
-      orgId = cookie;
-      return orgId;
-    }
-
-    const res = await fetch(CFG.orgListUrl, {
-      credentials: 'same-origin',
-      headers: { accept: 'application/json' },
-    });
-    if (!res.ok) throw new Error(`org lookup failed (${res.status})`);
-
-    const body = await res.json();
-    const list = Array.isArray(body) ? body : body?.data;
-    const found = Array.isArray(list) && list.find((o) => o && o.uuid);
-    if (!found) throw new Error('no organization found');
-
-    orgId = found.uuid;
-    return orgId;
-  }
-
-  /** Normalise one API record into our shape, tolerating field renames. */
-  function normalise(raw) {
-    if (!raw || typeof raw !== 'object') return null;
-    const uuid = raw.uuid || raw.id;
-    if (!uuid) return null;
-    const updated = raw.updated_at || raw.updatedAt || raw.created_at || raw.createdAt || null;
-    return {
-      uuid,
-      title: (raw.name || raw.title || '').trim() || 'Untitled chat',
-      summary: (raw.summary || '').trim(),
-      updated: updated ? new Date(updated).getTime() : null,
-      created: raw.created_at ? new Date(raw.created_at).getTime() : null,
-      hasDate: Boolean(updated),
-    };
-  }
-
-  async function fetchViaApi() {
-    const org = await resolveOrg();
-    const base = CFG.conversationsPath(org);
-    const out = [];
-    const seen = new Set();
-
-    for (let page = 0; page < MAX_PAGES; page += 1) {
-      const url = `${base}?limit=${PAGE_SIZE}&offset=${page * PAGE_SIZE}`;
-      const res = await fetch(url, {
-        credentials: 'same-origin',
-        headers: { accept: 'application/json' },
-      });
-      if (!res.ok) throw new Error(`list failed (${res.status})`);
-
-      const body = await res.json();
-      const list = Array.isArray(body) ? body : body?.data;
-      if (!Array.isArray(list)) throw new Error('unexpected list shape');
-
-      const batch = list.map(normalise).filter(Boolean).filter((c) => !seen.has(c.uuid));
-      batch.forEach((c) => seen.add(c.uuid));
-      out.push(...batch);
-
-      // Stop on a short page, or when paging is ignored and we just re-read
-      // the same records. Either way there is nothing further to fetch.
-      if (list.length < PAGE_SIZE || batch.length === 0) break;
-    }
-
-    return out;
-  }
-
-  /** Fallback: scrape whatever the sidebar has rendered. No timestamps. */
+  /** Scrape whatever the sidebar has rendered. No timestamps available. */
   function fetchViaDom() {
+    const panel = document.getElementById('cmp-root');
     const seen = new Set();
     const out = [];
-    const panel = document.getElementById('cmp-root');
-    document.querySelectorAll(CFG.chatLinkSelector).forEach((a) => {
+    document.querySelectorAll(SITE.linkSelector).forEach((a) => {
       if (panel && panel.contains(a)) return;   // skip our own rows
-      const href = a.getAttribute('href') || '';
-      const m = href.match(CFG.chatHrefPattern);
-      if (!m) return;
-      const uuid = m[1];
-      if (seen.has(uuid)) return;
-      seen.add(uuid);
+      const m = (a.getAttribute('href') || '').match(SITE.hrefPattern);
+      if (!m || seen.has(m[1])) return;
+      seen.add(m[1]);
       out.push({
-        uuid,
+        uuid: m[1],
         title: (a.textContent || '').trim() || 'Untitled chat',
         summary: '',
         updated: null,
@@ -395,15 +311,16 @@
     render();
 
     try {
-      state.chats = await fetchViaApi();
+      state.chats = await SITE.list();
       state.source = 'api';
     } catch (firstErr) {
       let apiErr = firstErr;
-      if (orgId && readCookie(CFG.orgCookie) === orgId) {
-        // The org came from a cookie that may be stale — retry via lookup.
-        orgId = null;
+      if (typeof SITE.resetAuth === 'function') {
+        // Cached credentials (an org id, a bearer token) may simply be stale.
+        // Clear them and try once more before falling back.
+        SITE.resetAuth();
         try {
-          state.chats = await fetchViaApi();
+          state.chats = await SITE.list();
           state.source = 'api';
           apiErr = null;
         } catch (secondErr) {
@@ -428,23 +345,6 @@
 
     state.loading = false;
     render();
-  }
-
-  async function deleteChat(uuid) {
-    const org = await resolveOrg();
-    const res = await fetch(CFG.deletePath(org, uuid), {
-      method: 'DELETE',
-      credentials: 'same-origin',
-      headers: { accept: 'application/json' },
-    });
-    if (res.status === 429) {
-      const retry = Number(res.headers.get('retry-after')) || 5;
-      const err = new Error('rate limited');
-      err.retryAfter = retry;
-      throw err;
-    }
-    if (!res.ok && res.status !== 404) throw new Error(`delete failed (${res.status})`);
-    return true;
   }
 
   /* ------------------------------------------------------------------ *
@@ -513,6 +413,7 @@
     const header = el('div', 'cmp-header');
     const titleWrap = el('div', 'cmp-title-wrap');
     titleWrap.appendChild(el('span', 'cmp-title', 'Chat Manager Pro'));
+    titleWrap.appendChild(el('span', 'cmp-site', SITE.label));
     sourceBadge = el('span', 'cmp-badge', '');
     titleWrap.appendChild(sourceBadge);
     header.appendChild(titleWrap);
@@ -718,7 +619,9 @@
       row.appendChild(body);
 
       const open = el('a', 'cmp-open-link', '↗');
-      open.href = `/chat/${chat.uuid}`;
+      open.href = SITE.conversationUrl
+        ? SITE.conversationUrl(chat.uuid)
+        : `/${SITE.id === 'chatgpt' ? 'c' : 'chat'}/${chat.uuid}`;
       open.title = 'Open chat';
       open.addEventListener('click', (ev) => ev.stopPropagation());
       row.appendChild(open);
@@ -886,7 +789,7 @@
       if (aborted) break;
       progress();
       try {
-        await deleteChat(chat.uuid);
+        await SITE.remove(chat.uuid);
         state.selected.delete(chat.uuid);
         state.chats = state.chats.filter((c) => c.uuid !== chat.uuid);
         done += 1;
@@ -896,7 +799,7 @@
           // Backed off rather than hammering — then retry this one chat once.
           await sleep(err.retryAfter * 1000);
           try {
-            await deleteChat(chat.uuid);
+            await SITE.remove(chat.uuid);
             state.selected.delete(chat.uuid);
             state.chats = state.chats.filter((c) => c.uuid !== chat.uuid);
             done += 1;
@@ -916,9 +819,9 @@
     state.busy = false;
 
     // If the open chat was deleted, get off the dead URL.
-    const current = location.pathname.match(CFG.chatHrefPattern);
+    const current = location.pathname.match(SITE.hrefPattern);
     if (current && targets.some((c) => c.uuid === current[1] && !failed.find((f) => f.chat.uuid === c.uuid))) {
-      location.href = CFG.newChatUrl;
+      location.href = SITE.newChatUrl;
       return;
     }
 

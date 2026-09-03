@@ -1,7 +1,8 @@
 /**
  * Chat Manager Pro — read-only diagnostic.
  *
- * Paste into the DevTools console on an open, signed-in claude.ai tab.
+ * Paste into the DevTools console on an open, signed-in claude.ai or
+ * chatgpt.com tab. It detects which site it is on.
  * It reports whether the endpoints and selectors the extension relies on
  * actually match this build of the site.
  *
@@ -26,69 +27,42 @@
   if (document.getElementById('cmp-root')) pass('panel container injected');
   else warn('panel container missing (expected if the script failed to load)');
 
-  head('2. Organization id');
-  let org = cookie('lastActiveOrg');
-  if (org) pass('found via lastActiveOrg cookie', org);
-  else warn('lastActiveOrg cookie absent — falling back to /api/organizations');
-
-  if (!org) {
-    try {
-      const r = await fetch('/api/organizations', {
-        credentials: 'same-origin', headers: { accept: 'application/json' },
-      });
-      if (!r.ok) throw new Error('HTTP ' + r.status);
-      const body = await r.json();
-      const list = Array.isArray(body) ? body : body?.data;
-      org = list?.find((o) => o?.uuid)?.uuid;
-      if (org) pass('found via /api/organizations', org);
-      else fail('/api/organizations returned no uuid', body);
-    } catch (e) {
-      fail('/api/organizations failed', e.message);
-    }
+  head('2. Site adapter');
+  const SITE = window.cmpSite;
+  if (!SITE) {
+    fail('no adapter matched this host', location.hostname);
+    console.log('   Supported hosts are claude.ai, chatgpt.com, chat.openai.com.');
+  } else {
+    pass('adapter resolved', `${SITE.label} (${SITE.id})`);
   }
 
-  head('3. Conversation list endpoint');
-  if (!org) {
-    fail('skipped — no organization id');
+  head('3. Conversation list');
+  if (!SITE) {
+    fail('skipped — no adapter');
   } else {
-    const url = `/api/organizations/${org}/chat_conversations?limit=100&offset=0`;
     try {
-      const r = await fetch(url, {
-        credentials: 'same-origin', headers: { accept: 'application/json' },
-      });
-      console.log('   request:', url, '->', r.status);
-      if (!r.ok) {
-        fail(`list returned HTTP ${r.status} — extension will fall back to DOM mode`);
+      const list = await SITE.list();
+      pass(`returned ${list.length} conversations`);
+      const s = list[0];
+      if (!s) {
+        warn('list is empty — create a chat and re-run');
       } else {
-        const body = await r.json();
-        const list = Array.isArray(body) ? body : body?.data;
-        if (!Array.isArray(list)) {
-          fail('unexpected response shape — extension falls back to DOM mode', body);
-        } else {
-          pass(`returned ${list.length} conversations`);
-          const s = list[0];
-          if (!s) { warn('list is empty — create a chat and re-run'); }
-          else {
-            console.log('   first record keys:', Object.keys(s).join(', '));
-            const need = { uuid: s.uuid ?? s.id, name: s.name ?? s.title,
-                           updated: s.updated_at ?? s.updatedAt };
-            Object.entries(need).forEach(([k, v]) =>
-              v !== undefined ? pass(`field "${k}" present`, v)
-                              : fail(`field "${k}" MISSING — update normalise() in content.js`));
-            if (need.updated === undefined) {
-              warn('no timestamp field means sorting by date and the date filter will not work');
-            }
-          }
-        }
+        console.log('   sample record:', s);
+        [['uuid', s.uuid], ['title', s.title]].forEach(([k, v]) =>
+          v ? pass(`field "${k}" present`, v)
+            : fail(`field "${k}" MISSING — fix normalise() in sites.js`));
+        if (s.hasDate) pass('timestamps present — sorting and date filter work');
+        else warn('no timestamp — sort-by-date and the date filter will not work');
       }
     } catch (e) {
-      fail('list request threw', e.message);
+      fail('list failed — the extension will fall back to DOM mode', e.message);
+      console.log('   Fix the adapter for this site in sites.js.');
     }
   }
 
   head('4. Delete endpoint (shape only — nothing is deleted)');
-  if (org) {
-    console.log(`   the extension will DELETE /api/organizations/${org}/chat_conversations/<uuid>`);
+  if (SITE) {
+    console.log(`   ${SITE.label} deletions go through SITE.remove() in sites.js`);
     warn('cannot be verified read-only. Test it on ONE throwaway chat first.');
   }
 
@@ -96,14 +70,19 @@
   const targets = {
     'chat titles':   ['a[href^="/chat/"]', 'a[href^="/cowork/"]', 'a[href^="/code/"]',
                       'a[href^="/project/"]', 'a[href^="/projects/"]',
-                      'a[href^="/artifacts/"]', 'a[href^="/recents/"]'],
+                      'a[href^="/artifacts/"]', 'a[href^="/recents/"]',
+                      'a[href^="/c/"]', 'a[href^="/g/"]'],
     'messages':      ['[data-testid="user-message"]', '[data-testid="assistant-message"]',
-                      '[data-testid="chat-message"]', '.font-claude-message', 'main .prose'],
+                      '[data-testid="chat-message"]', '.font-claude-message', 'main .prose',
+                      '[data-message-author-role]', '[data-testid^="conversation-turn"]',
+                      'main .markdown'],
     'media':         ['main img', 'main video', 'main canvas', '[data-testid="file-thumbnail"]'],
     'account':       ['[data-testid="user-menu-button"]', '[data-testid="account-menu"]',
-                      'nav footer', 'aside footer'],
+                      'nav footer', 'aside footer', '[data-testid="profile-button"]',
+                      '[data-testid="accounts-profile-button"]'],
     'message input': ['main [contenteditable="true"]', 'main .ProseMirror', 'main textarea',
-                      '[data-testid="chat-input"]', 'fieldset [contenteditable="true"]'],
+                      '[data-testid="chat-input"]', 'fieldset [contenteditable="true"]',
+                      '#prompt-textarea', '#composer-background [contenteditable="true"]'],
   };
 
   for (const [label, sels] of Object.entries(targets)) {
@@ -139,6 +118,6 @@
   else warn('no internal links found — is the sidebar collapsed?');
 
   head('Done');
-  console.log('Re-run this on each surface you use: /chat, /code and /cowork');
-  console.log('render different sidebars, and each needs its routes covered.');
+  console.log('Re-run on each site and surface you use. Claude renders different');
+  console.log('sidebars at /chat, /code and /cowork; ChatGPT uses /c and /g.');
 })();

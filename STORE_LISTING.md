@@ -9,10 +9,10 @@ and a mismatch here is how listings drift.
 ## Item name
 
 ```
-Chat Manager Pro – Bulk Delete & Privacy for Claude
+Chat Manager Pro – Bulk Delete & Privacy for Claude & ChatGPT
 ```
 
-51 / 75 characters.
+61 / 75 characters.
 
 The brand sits in the qualifier position, never leading. `Claude Chat Manager`
 would read as a first-party product and is the shape that gets pulled;
@@ -23,10 +23,10 @@ actually type into store search. Nobody searches "chat manager".
 ## Short description
 
 ```
-Bulk delete, search, sort and filter your Claude.ai chats. Blur them for privacy in public, and lock your screen when away.
+Bulk delete, search, sort and filter your Claude and ChatGPT chats. Blur them for privacy, and lock your screen when away.
 ```
 
-123 / 132 characters. The limit is hard and the upload fails at 133, so leave
+122 / 132 characters. The limit is hard and the upload fails at 133, so leave
 the margin alone when editing.
 
 ## Category
@@ -43,11 +43,11 @@ English (add locales later; each one is an extra listing to maintain).
 ## Detailed description
 
 ```
-Manage your Claude.ai conversations the way you actually want to.
+Manage your Claude and ChatGPT conversations the way you actually want to.
 
-Claude.ai gives you no way to delete more than one chat at a time, no search
-across your history, and no way to sort or filter it. Chat Manager Pro adds all
-of that — plus a privacy mode for when you are working somewhere public.
+Neither Claude nor ChatGPT lets you delete more than one chat at a time, search
+your full history, or sort and filter it. Chat Manager Pro adds all of that to
+both — plus a privacy mode for when you are working somewhere public.
 
 
 BULK DELETE, SAFELY
@@ -99,8 +99,8 @@ PRIVATE BY DESIGN
 • No remote code. The source you install is the source that ships.
 
 
-Claude is a trademark of Anthropic PBC. This extension is an independent project
-with no relationship to Anthropic.
+Claude is a trademark of Anthropic PBC. ChatGPT is a trademark of OpenAI.
+This extension is an independent project with no relationship to either company.
 ```
 
 ---
@@ -108,7 +108,7 @@ with no relationship to Anthropic.
 ## Single purpose statement
 
 > Chat Manager Pro has one purpose: helping the user manage their own
-> conversation list on claude.ai. Everything it does — search, sort, filter,
+> conversation lists on claude.ai and chatgpt.com. Everything it does — search, sort, filter,
 > multi-select, bulk delete, and visually shielding that list from onlookers —
 > serves managing that one list.
 

@@ -372,7 +372,15 @@ html.cmp-privacy-on.cmp-blur-titles :is(
   a[href^="/project/"],
   a[href^="/projects/"],
   a[href^="/artifacts/"],
+  a[href^="/chat/"],
+  a[href^="/cowork/"],
+  a[href^="/code/"],
+  a[href^="/project/"],
+  a[href^="/projects/"],
+  a[href^="/artifacts/"],
   a[href^="/recents/"],
+  a[href^="/c/"],
+  a[href^="/g/"],
   .cmp-item-title
 ) {
   filter: blur(var(--cmp-blur, 7px));
@@ -385,7 +393,10 @@ html.cmp-privacy-on.cmp-blur-messages :is(
   [data-testid="assistant-message"],
   [data-testid="chat-message"],
   .font-claude-message,
-  main .prose
+  main .prose,
+  [data-message-author-role],
+  [data-testid^="conversation-turn"],
+  main .markdown
 ) {
   filter: blur(var(--cmp-blur, 7px));
   transition: filter 0.12s ease;
@@ -408,7 +419,9 @@ html.cmp-privacy-on.cmp-blur-input :is(
   main .ProseMirror,
   main textarea,
   [data-testid="chat-input"],
-  fieldset [contenteditable="true"]
+  fieldset [contenteditable="true"],
+  #prompt-textarea,
+  #composer-background [contenteditable="true"]
 ) {
   filter: blur(var(--cmp-blur, 7px));
   transition: filter 0.12s ease;
@@ -419,7 +432,9 @@ html.cmp-privacy-on.cmp-blur-account :is(
   [data-testid="user-menu-button"],
   [data-testid="account-menu"],
   nav footer,
-  aside footer
+  aside footer,
+  [data-testid="profile-button"],
+  [data-testid="accounts-profile-button"]
 ) {
   filter: blur(var(--cmp-blur, 7px));
   transition: filter 0.12s ease;
@@ -433,7 +448,15 @@ html.cmp-privacy-on.cmp-reveal-hover :is(
   a[href^="/project/"],
   a[href^="/projects/"],
   a[href^="/artifacts/"],
+  a[href^="/chat/"],
+  a[href^="/cowork/"],
+  a[href^="/code/"],
+  a[href^="/project/"],
+  a[href^="/projects/"],
+  a[href^="/artifacts/"],
   a[href^="/recents/"],
+  a[href^="/c/"],
+  a[href^="/g/"],
   .cmp-item-title,
   [data-testid="user-message"],
   [data-testid="assistant-message"],
@@ -452,7 +475,14 @@ html.cmp-privacy-on.cmp-reveal-hover :is(
   main .ProseMirror,
   main textarea,
   [data-testid="chat-input"],
-  fieldset [contenteditable="true"]
+  fieldset [contenteditable="true"],
+  [data-message-author-role],
+  [data-testid^="conversation-turn"],
+  main .markdown,
+  #prompt-textarea,
+  #composer-background [contenteditable="true"],
+  [data-testid="profile-button"],
+  [data-testid="accounts-profile-button"]
 ):hover {
   filter: none;
 }
@@ -564,4 +594,15 @@ html.cmp-locked body > *:not(#cmp-root) {
 
 @media (prefers-reduced-motion: reduce) {
   .cmp-lock-card.cmp-shake { animation: none; }
+}
+
+/* Which site the panel is attached to — useful when several tabs are open. */
+.cmp-site {
+  font-size: 11px;
+  padding: 2px 7px;
+  border-radius: 99px;
+  background: var(--cmp-bg-soft);
+  border: 1px solid var(--cmp-border);
+  color: var(--cmp-text-dim);
+  white-space: nowrap;
 }
