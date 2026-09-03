@@ -34,6 +34,7 @@
   const LOCK_SIGNAL = 'cmp.lockSignal';
   const SITES_KEY = 'cmp.sites';
   const THEME_KEY = 'cmp.theme';
+  const VISION_KEY = 'cmp.vision';
   const DEFAULTS = { sort: 'newest', filter: 'all' };
   const PRIVACY_DEFAULTS = {
     on: false,
@@ -51,6 +52,10 @@
   const THEME_DEFAULTS = { font: 'system', size: 'medium', density: 'comfortable', accent: 'default' };
   // Only non-default choices have a class. An untouched install adds nothing
   // to the page, so the default look is genuinely the site's own.
+  const VISION_DEFAULTS = { colorBlind: 'none' };
+  // Exactly one simulation at a time — these are mutually exclusive by nature,
+  // and stacking two colour matrices would show you something nobody sees.
+  const COLOR_BLIND_MODES = ['protanopia', 'deuteranopia', 'tritanopia', 'achromatopsia'];
   const THEME_CLASSES = {
     font: ['serif', 'mono'],
     size: ['small', 'large'],
@@ -96,6 +101,7 @@
   const lock = { ...LOCK_DEFAULTS };
   const siteEnabled = { ...SITES_DEFAULTS };
   const theme = { ...THEME_DEFAULTS };
+  const vision = { ...VISION_DEFAULTS };
 
   /** Whether the extension should do anything at all on this site. */
   let active = false;
@@ -105,13 +111,14 @@
     return new Promise((resolve) => {
       try {
         chrome.storage.local.get(
-          [PREFS_KEY, PRIVACY_KEY, LOCK_KEY, SITES_KEY, THEME_KEY], (res) => {
+          [PREFS_KEY, PRIVACY_KEY, LOCK_KEY, SITES_KEY, THEME_KEY, VISION_KEY], (res) => {
           if (!chrome.runtime.lastError && res) {
             if (res[PREFS_KEY]) Object.assign(prefs, res[PREFS_KEY]);
             if (res[PRIVACY_KEY]) Object.assign(privacy, res[PRIVACY_KEY]);
             if (res[LOCK_KEY]) Object.assign(lock, res[LOCK_KEY]);
             if (res[SITES_KEY]) Object.assign(siteEnabled, res[SITES_KEY]);
             if (res[THEME_KEY]) Object.assign(theme, res[THEME_KEY]);
+            if (res[VISION_KEY]) Object.assign(vision, res[VISION_KEY]);
           }
           resolve();
         });
@@ -136,6 +143,47 @@
     Object.entries(THEME_CLASSES).forEach(([key, values]) => {
       values.forEach((v) => c.toggle(`cmp-${key}-${v}`, active && theme[key] === v));
     });
+  }
+
+  /**
+   * Colour-blindness simulation. The matrices are the standard Brettel/Viénot
+   * approximations used by browser dev tools. They are injected once, lazily,
+   * because most sessions never turn a simulator on.
+   */
+  const CB_MATRIX = {
+    protanopia: '0.567 0.433 0 0 0  0.558 0.442 0 0 0  0 0.242 0.758 0 0  0 0 0 1 0',
+    deuteranopia: '0.625 0.375 0 0 0  0.7 0.3 0 0 0  0 0.3 0.7 0 0  0 0 0 1 0',
+    tritanopia: '0.95 0.05 0 0 0  0 0.433 0.567 0 0  0 0.475 0.525 0 0  0 0 0 1 0',
+    achromatopsia: '0.299 0.587 0.114 0 0  0.299 0.587 0.114 0 0  0.299 0.587 0.114 0 0  0 0 0 1 0',
+  };
+
+  let filtersInjected = false;
+
+  function ensureFilters() {
+    if (filtersInjected || !root) return;
+    const NS = 'http://www.w3.org/2000/svg';
+    const svg = document.createElementNS(NS, 'svg');
+    svg.setAttribute('class', 'cmp-filters');
+    svg.setAttribute('aria-hidden', 'true');
+    Object.entries(CB_MATRIX).forEach(([name, values]) => {
+      const filter = document.createElementNS(NS, 'filter');
+      filter.setAttribute('id', `cmp-f-${name}`);
+      filter.setAttribute('color-interpolation-filters', 'sRGB');
+      const matrix = document.createElementNS(NS, 'feColorMatrix');
+      matrix.setAttribute('type', 'matrix');
+      matrix.setAttribute('values', values);
+      filter.appendChild(matrix);
+      svg.appendChild(filter);
+    });
+    root.appendChild(svg);
+    filtersInjected = true;
+  }
+
+  function applyVision() {
+    const c = document.documentElement.classList;
+    const mode = active ? vision.colorBlind : 'none';
+    if (mode !== 'none') ensureFilters();
+    COLOR_BLIND_MODES.forEach((m) => c.toggle(`cmp-cb-${m}`, mode === m));
   }
 
   function savePrivacy() {
@@ -934,6 +982,7 @@
         root.style.display = '';
         applyPrivacy();
         applyTheme();
+        applyVision();
         applyLock();
         render();
       } else {
@@ -941,6 +990,7 @@
         if (root) root.style.display = 'none';
         applyPrivacy();   // clears the blur classes
         applyTheme();     // clears the appearance classes
+        applyVision();    // clears the simulation classes
         applyLock();      // clears the lock class and overlay
       }
     });
@@ -978,6 +1028,10 @@
       if (changes[SITES_KEY] && changes[SITES_KEY].newValue) {
         Object.assign(siteEnabled, changes[SITES_KEY].newValue);
         applyEnabled();
+      }
+      if (changes[VISION_KEY] && changes[VISION_KEY].newValue) {
+        Object.assign(vision, VISION_DEFAULTS, changes[VISION_KEY].newValue);
+        applyVision();
       }
       if (changes[THEME_KEY] && changes[THEME_KEY].newValue) {
         // Appearance changed in the popup — including a reset.
@@ -1038,6 +1092,7 @@
     whenBodyReady(() => {
       buildUI();
       applyPrivacy();   // again, now that the eye button exists
+      applyVision();    // needs #cmp-root to exist for the filter defs
       applyLock();
       render();
     });

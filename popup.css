@@ -303,3 +303,60 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .track, .knob, .sub { transition: none; }
 }
+
+/* ---------- view router ---------- */
+.view { display: none; }
+body[data-view="home"]       .view[data-view="home"],
+body[data-view="colorblind"] .view[data-view="colorblind"] { display: block; }
+
+.subhead {
+  display: flex;
+  align-items: flex-start;
+  gap: 11px;
+  padding: 2px 4px 14px;
+}
+.subhead h1 { margin: 0 0 2px; font-size: 15px; font-weight: 650; }
+.subhead p { margin: 0; font-size: 12px; color: var(--dim); line-height: 1.45; }
+
+.back {
+  flex: none;
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  background: var(--card);
+  color: var(--text);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+}
+.back:hover { background: var(--accent-soft); color: var(--accent); }
+.back svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+/* rows that navigate rather than toggle */
+.row-nav {
+  width: 100%;
+  border: none;
+  background: none;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+}
+.chev {
+  flex: none;
+  width: 17px;
+  height: 17px;
+  fill: none;
+  stroke: var(--muted);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.row-nav:hover .chev { stroke: var(--accent); }
+
+.note {
+  margin: 12px 4px 0;
+  font-size: 11.5px;
+  line-height: 1.5;
+  color: var(--muted);
+}

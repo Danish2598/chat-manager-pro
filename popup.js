@@ -13,11 +13,13 @@ const PRIVACY_KEY = 'cmp.privacy';
 const LOCK_KEY = 'cmp.lock';
 const SITES_KEY = 'cmp.sites';
 const THEME_KEY = 'cmp.theme';
+const VISION_KEY = 'cmp.vision';
 const SIGNAL_KEY = 'cmp.toggleSignal';
 const LOCK_SIGNAL = 'cmp.lockSignal';
 
 const SITES_DEFAULTS = { claude: true, chatgpt: true, gemini: true };
 const THEME_DEFAULTS = { font: 'system', size: 'medium', density: 'comfortable', accent: 'default' };
+const VISION_DEFAULTS = { colorBlind: 'none' };
 const PRIVACY_DEFAULTS = {
   on: false, titles: true, messages: true, media: true,
   account: true, input: true, hover: true, strength: 'medium',
@@ -136,7 +138,7 @@ $('lock-now').addEventListener('click', () => {
 });
 
 /* ---------- load ---------- */
-chrome.storage.local.get([PRIVACY_KEY, LOCK_KEY, SITES_KEY, THEME_KEY], (res) => {
+chrome.storage.local.get([PRIVACY_KEY, LOCK_KEY, SITES_KEY, THEME_KEY, VISION_KEY], (res) => {
   showLockState(Boolean(res && res[LOCK_KEY] && res[LOCK_KEY].record));
 
   const sites = { ...SITES_DEFAULTS, ...(res && res[SITES_KEY]) };
@@ -145,6 +147,9 @@ chrome.storage.local.get([PRIVACY_KEY, LOCK_KEY, SITES_KEY, THEME_KEY], (res) =>
   const t = { ...THEME_DEFAULTS, ...(res && res[THEME_KEY]) };
   Object.entries(T).forEach(([key, node]) => { node.value = t[key]; });
   applyAccent(t.accent);
+
+  const v = { ...VISION_DEFAULTS, ...(res && res[VISION_KEY]) };
+  showVision(v.colorBlind);
   const privacy = { ...PRIVACY_DEFAULTS, ...(res && res[PRIVACY_KEY]) };
   Object.entries(P).forEach(([key, node]) => {
     if (node.type === 'checkbox') node.checked = Boolean(privacy[key]);
@@ -169,6 +174,32 @@ function reflectEnabled() {
 }
 
 Object.values(P).forEach((node) => node.addEventListener('change', savePrivacy));
+
+/* ---------- view router ---------- */
+document.querySelectorAll('[data-goto]').forEach((el) =>
+  el.addEventListener('click', () => { document.body.dataset.view = el.dataset.goto; }));
+document.querySelectorAll('[data-back]').forEach((el) =>
+  el.addEventListener('click', () => { document.body.dataset.view = 'home'; }));
+
+/* ---------- colour blindness ---------- */
+const CB = [...document.querySelectorAll('[data-cb]')];
+const cbState = $('cb-state');
+
+function showVision(mode) {
+  // Rendered as switches, but they behave as one choice: two colour matrices
+  // stacked would show something no one actually sees.
+  CB.forEach((node) => { node.checked = node.dataset.cb === mode; });
+  const on = CB.find((n) => n.checked);
+  cbState.textContent = on
+    ? on.closest('.row').querySelector('.row-title').textContent
+    : 'Off';
+}
+
+CB.forEach((node) => node.addEventListener('change', () => {
+  const mode = node.checked ? node.dataset.cb : 'none';
+  showVision(mode);
+  chrome.storage.local.set({ [VISION_KEY]: { colorBlind: mode } });
+}));
 
 /* ---------- launch ---------- */
 // Writing a changing value fires storage.onChanged in the content script,

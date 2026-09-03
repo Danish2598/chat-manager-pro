@@ -865,3 +865,31 @@ html:is(.cmp-accent-blue, .cmp-accent-teal, .cmp-accent-violet, .cmp-accent-ambe
 ) * {
   color: var(--cmp-accent-user) !important;
 }
+
+/* ==========================================================================
+ * VISION SIMULATORS
+ *
+ * Colour-blindness simulation needs a real colour matrix, which CSS filters
+ * cannot express — so content.js injects a hidden <svg> of <feColorMatrix>
+ * filters into #cmp-root and these rules reference them by id.
+ *
+ * The filter is applied to the site's own content and NOT to #cmp-root, for
+ * two reasons: our controls must stay true-colour so you can read them, and
+ * a `filter` on an ancestor turns it into the containing block for
+ * position:fixed descendants — which would break the panel.
+ *
+ * Only one simulation can be active at a time; the popup enforces that.
+ * ========================================================================== */
+
+html.cmp-cb-protanopia    body > *:not(#cmp-root) { filter: url(#cmp-f-protanopia); }
+html.cmp-cb-deuteranopia  body > *:not(#cmp-root) { filter: url(#cmp-f-deuteranopia); }
+html.cmp-cb-tritanopia    body > *:not(#cmp-root) { filter: url(#cmp-f-tritanopia); }
+html.cmp-cb-achromatopsia body > *:not(#cmp-root) { filter: url(#cmp-f-achromatopsia); }
+
+.cmp-filters {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+  pointer-events: none;
+}

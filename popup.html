@@ -5,14 +5,14 @@
   <title>Chat Manager Pro</title>
   <link rel="stylesheet" href="popup.css" />
 </head>
-<body>
+<body data-view="home">
 
 <header class="topbar">
   <span class="wordmark">Chat Manager<span class="wordmark-pro">Pro</span></span>
   <span class="version">1.0</span>
 </header>
 
-<main class="body">
+<main class="body view" data-view="home">
 
   <!-- primary action -->
   <section class="card card-hero">
@@ -142,6 +142,20 @@
     </div>
   </section>
 
+
+  <!-- simulators -->
+  <h2 class="section-label">Vision simulators</h2>
+  <section class="card">
+    <button class="row row-nav" type="button" data-goto="colorblind">
+      <span class="ico" aria-hidden="true">
+        <svg viewBox="0 0 20 20"><circle cx="10" cy="10" r="6.5"/><path d="M10 3.5a6.5 6.5 0 0 1 0 13Z" fill="currentColor" stroke="none"/></svg>
+      </span>
+      <span class="row-main"><span class="row-title">Colour blindness</span>
+        <span class="row-sub" id="cb-state">Off</span></span>
+      <svg class="chev" viewBox="0 0 20 20" aria-hidden="true"><path d="m8 5 5 5-5 5"/></svg>
+    </button>
+  </section>
+
   <!-- footer -->
   <section class="card card-foot">
     <span>Runs entirely on your device.<br /><span class="muted">No tracking, no data leaves your browser.</span></span>
@@ -150,6 +164,45 @@
     </a>
   </section>
 
+</main>
+
+
+<main class="body view" data-view="colorblind">
+  <div class="subhead">
+    <button class="back" type="button" data-back aria-label="Back">
+      <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m12 5-5 5 5 5"/></svg>
+    </button>
+    <div>
+      <h1>Colour blindness</h1>
+      <p>Simulate how this page looks to someone with colour vision deficiency.</p>
+    </div>
+  </div>
+
+  <section class="card">
+    <label class="row">
+      <span class="row-main"><span class="row-title">Protanopia</span>
+        <span class="row-sub">Red-blind colour vision</span></span>
+      <span class="switch"><input type="checkbox" id="cb-protanopia" data-cb="protanopia" /><span class="track"><span class="knob"></span></span></span>
+    </label>
+    <label class="row">
+      <span class="row-main"><span class="row-title">Deuteranopia</span>
+        <span class="row-sub">Green-blind colour vision</span></span>
+      <span class="switch"><input type="checkbox" id="cb-deuteranopia" data-cb="deuteranopia" /><span class="track"><span class="knob"></span></span></span>
+    </label>
+    <label class="row">
+      <span class="row-main"><span class="row-title">Tritanopia</span>
+        <span class="row-sub">Blue-blind colour vision</span></span>
+      <span class="switch"><input type="checkbox" id="cb-tritanopia" data-cb="tritanopia" /><span class="track"><span class="knob"></span></span></span>
+    </label>
+    <label class="row">
+      <span class="row-main"><span class="row-title">Achromatopsia</span>
+        <span class="row-sub">Full colour blindness (greyscale)</span></span>
+      <span class="switch"><input type="checkbox" id="cb-achromatopsia" data-cb="achromatopsia" /><span class="track"><span class="knob"></span></span></span>
+    </label>
+  </section>
+
+  <p class="note">One at a time — turning one on switches the others off.
+  Affects only the page you are viewing, never what you send.</p>
 </main>
 
 <script src="lock-crypto.js"></script>

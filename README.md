@@ -98,6 +98,34 @@ but not always. In our own panel it is exact.
 
 ---
 
+## Vision simulators
+
+Simulates how the page looks to someone with a colour vision deficiency —
+protanopia, deuteranopia, tritanopia or achromatopsia. Popup → **Vision
+simulators** → **Colour blindness**.
+
+**One at a time.** They are rendered as switches but behave as a single choice:
+stacking two colour matrices would show you something nobody actually sees.
+
+Three implementation notes:
+
+- **SVG, not CSS.** A colour matrix cannot be expressed with CSS filter
+  functions, so `content.js` injects a hidden `<svg>` of `<feColorMatrix>`
+  filters into `#cmp-root` and the stylesheet references them by id. They are
+  injected lazily — most sessions never turn a simulator on.
+- **The filter is applied to the site's content, never to `#cmp-root`.** Our
+  controls must stay true-colour so you can read them, and a `filter` on an
+  ancestor makes it the containing block for `position: fixed` descendants,
+  which would break the panel.
+- **The site's own fixed elements may shift slightly** while a simulation is
+  active, for that same containing-block reason. It is a temporary inspection
+  mode, so this is an accepted trade rather than a bug.
+
+Adding a screen is a row with `data-goto` plus a `<main class="view">` — the
+popup has a small view router for exactly this.
+
+---
+
 ## Screen lock
 
 Locks the page behind a password so nobody can read or use your chats while you
