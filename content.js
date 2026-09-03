@@ -25,8 +25,8 @@
     orgCookie: 'lastActiveOrg',
     conversationsPath: (org) => `/api/organizations/${org}/chat_conversations`,
     deletePath: (org, uuid) => `/api/organizations/${org}/chat_conversations/${uuid}`,
-    chatLinkSelector: 'a[href^="/chat/"]',
-    chatHrefPattern: /^\/chat\/([0-9a-f-]{16,})/i,
+    chatLinkSelector: 'a[href^="/chat/"], a[href^="/cowork/"], a[href^="/code/"]',
+    chatHrefPattern: /^\/(?:chat|cowork|code)\/([A-Za-z0-9_-]{8,})/i,
     newChatUrl: '/new',
   };
 
@@ -368,7 +368,9 @@
   function fetchViaDom() {
     const seen = new Set();
     const out = [];
+    const panel = document.getElementById('cmp-root');
     document.querySelectorAll(CFG.chatLinkSelector).forEach((a) => {
+      if (panel && panel.contains(a)) return;   // skip our own rows
       const href = a.getAttribute('href') || '';
       const m = href.match(CFG.chatHrefPattern);
       if (!m) return;

@@ -94,7 +94,9 @@
 
   head('5. Blur selectors — how many elements each one matches here');
   const targets = {
-    'chat titles':   ['nav a[href^="/chat/"]', 'aside a[href^="/chat/"]', 'li a[href^="/chat/"]'],
+    'chat titles':   ['a[href^="/chat/"]', 'a[href^="/cowork/"]', 'a[href^="/code/"]',
+                      'a[href^="/project/"]', 'a[href^="/projects/"]',
+                      'a[href^="/artifacts/"]', 'a[href^="/recents/"]'],
     'messages':      ['[data-testid="user-message"]', '[data-testid="assistant-message"]',
                       '[data-testid="chat-message"]', '.font-claude-message', 'main .prose'],
     'media':         ['main img', 'main video', 'main canvas', '[data-testid="file-thumbnail"]'],
@@ -121,6 +123,22 @@
     }
   }
 
+  head('6. Route census — every internal link on this page, by first path segment');
+  console.log('   Any row with a count that is NOT covered by the "chat titles"');
+  console.log('   selectors above is a surface whose titles will stay unblurred.');
+  const census = {};
+  document.querySelectorAll('a[href^="/"]').forEach((a) => {
+    const parts = (a.getAttribute('href') || '').split('/');
+    const seg = parts[1] || '(root)';
+    const hasId = parts.length > 2 && parts[2].length > 0;
+    const key = hasId ? `/${seg}/<id>` : `/${seg}`;
+    census[key] = (census[key] || 0) + 1;
+  });
+  const rows = Object.entries(census).sort((a, b) => b[1] - a[1]);
+  if (rows.length) console.table(Object.fromEntries(rows));
+  else warn('no internal links found — is the sidebar collapsed?');
+
   head('Done');
-  console.log('Open a conversation and re-run to test the message and input selectors.');
+  console.log('Re-run this on each surface you use: /chat, /code and /cowork');
+  console.log('render different sidebars, and each needs its routes covered.');
 })();

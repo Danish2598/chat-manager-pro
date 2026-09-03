@@ -197,6 +197,13 @@ or update the endpoints in `CFG`.
 the per-chat reasons. Rate-limited requests are retried once after honouring
 `Retry-After`.
 
+**Titles stay sharp on some surfaces.** Claude.ai renders several sidebars —
+`/chat/`, `/cowork/`, `/code/` — and each uses its own route prefix. The blur
+matches route prefixes that carry an id (`/code/<id>`), which is what keeps bare
+navigation links like `/projects` readable. If a surface you use is still
+unblurred, run `tools_verify.js` there: section 6 lists every route on the page,
+and any uncovered one goes into the titles list in `content.css`.
+
 **Blur misses something, or blurs too much.** The selectors are best-effort
 against markup that changes. Edit the `PRIVACY BLUR` block at the bottom of
 `content.css` — each target lists several candidate selectors, so *add* a

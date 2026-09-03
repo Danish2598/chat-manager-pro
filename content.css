@@ -366,9 +366,13 @@ html.cmp-blur-heavy  { --cmp-blur: 12px; }
 
 /* --- chat titles: sidebar list, and our own panel ------------------------ */
 html.cmp-privacy-on.cmp-blur-titles :is(
-  nav a[href^="/chat/"],
-  aside a[href^="/chat/"],
-  li a[href^="/chat/"],
+  a[href^="/chat/"],
+  a[href^="/cowork/"],
+  a[href^="/code/"],
+  a[href^="/project/"],
+  a[href^="/projects/"],
+  a[href^="/artifacts/"],
+  a[href^="/recents/"],
   .cmp-item-title
 ) {
   filter: blur(var(--cmp-blur, 7px));
@@ -423,9 +427,13 @@ html.cmp-privacy-on.cmp-blur-account :is(
 
 /* --- reveal on hover ----------------------------------------------------- */
 html.cmp-privacy-on.cmp-reveal-hover :is(
-  nav a[href^="/chat/"],
-  aside a[href^="/chat/"],
-  li a[href^="/chat/"],
+  a[href^="/chat/"],
+  a[href^="/cowork/"],
+  a[href^="/code/"],
+  a[href^="/project/"],
+  a[href^="/projects/"],
+  a[href^="/artifacts/"],
+  a[href^="/recents/"],
   .cmp-item-title,
   [data-testid="user-message"],
   [data-testid="assistant-message"],
