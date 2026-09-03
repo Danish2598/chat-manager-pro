@@ -103,8 +103,8 @@ hover over them.
 SCREEN LOCK
 
 Step away from your desk without closing anything. Alt+Shift+L locks the page
-behind a password — across every Claude tab at once, and a page reload does not
-clear it. Your password is never stored; only a salted PBKDF2 hash is kept.
+behind a password — across every supported tab at once, and a page reload does
+not clear it. Your password is never stored; only a salted PBKDF2 hash is kept.
 
 Please read this honestly: the screen lock deters someone walking up to your
 unattended machine. It is not protection against someone who can disable browser
