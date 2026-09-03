@@ -104,8 +104,10 @@ Simulates how the page looks to someone with a colour vision deficiency —
 protanopia, deuteranopia, tritanopia or achromatopsia. Popup → **Vision
 simulators** → **Colour blindness**.
 
-**One at a time.** They are rendered as switches but behave as a single choice:
-stacking two colour matrices would show you something nobody actually sees.
+**One at a time.** They are rendered as switches but are a single radio group
+underneath, so the browser enforces exclusivity even if the popup script fails.
+Stacking two colour matrices would depict a form of vision nobody has. Clicking
+the active one turns it off — the only part radios cannot do alone.
 
 Three implementation notes:
 

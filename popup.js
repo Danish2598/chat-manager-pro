@@ -137,27 +137,6 @@ $('lock-now').addEventListener('click', () => {
   chrome.storage.local.set({ [LOCK_SIGNAL]: Date.now() }, () => window.close());
 });
 
-/* ---------- load ---------- */
-chrome.storage.local.get([PRIVACY_KEY, LOCK_KEY, SITES_KEY, THEME_KEY, VISION_KEY], (res) => {
-  showLockState(Boolean(res && res[LOCK_KEY] && res[LOCK_KEY].record));
-
-  const sites = { ...SITES_DEFAULTS, ...(res && res[SITES_KEY]) };
-  Object.entries(S).forEach(([id, node]) => { node.checked = sites[id] !== false; });
-
-  const t = { ...THEME_DEFAULTS, ...(res && res[THEME_KEY]) };
-  Object.entries(T).forEach(([key, node]) => { node.value = t[key]; });
-  applyAccent(t.accent);
-
-  const v = { ...VISION_DEFAULTS, ...(res && res[VISION_KEY]) };
-  showVision(v.colorBlind);
-  const privacy = { ...PRIVACY_DEFAULTS, ...(res && res[PRIVACY_KEY]) };
-  Object.entries(P).forEach(([key, node]) => {
-    if (node.type === 'checkbox') node.checked = Boolean(privacy[key]);
-    else node.value = privacy[key];
-  });
-  reflectEnabled();
-});
-
 /* ---------- save ---------- */
 function savePrivacy() {
   const privacy = {};
@@ -182,21 +161,24 @@ document.querySelectorAll('[data-back]').forEach((el) =>
   el.addEventListener('click', () => { document.body.dataset.view = 'home'; }));
 
 /* ---------- colour blindness ---------- */
+// One radio group, so the browser guarantees a single active simulation even
+// if this script never runs. The handler only adds what radios cannot do on
+// their own: clicking the active one turns it back off.
 const CB = [...document.querySelectorAll('[data-cb]')];
 const cbState = $('cb-state');
+let cbCurrent = 'none';
 
 function showVision(mode) {
-  // Rendered as switches, but they behave as one choice: two colour matrices
-  // stacked would show something no one actually sees.
-  CB.forEach((node) => { node.checked = node.dataset.cb === mode; });
+  cbCurrent = mode;
+  CB.forEach((node) => { node.checked = node.value === mode; });
   const on = CB.find((n) => n.checked);
   cbState.textContent = on
     ? on.closest('.row').querySelector('.row-title').textContent
     : 'Off';
 }
 
-CB.forEach((node) => node.addEventListener('change', () => {
-  const mode = node.checked ? node.dataset.cb : 'none';
+CB.forEach((node) => node.addEventListener('click', () => {
+  const mode = cbCurrent === node.value ? 'none' : node.value;
   showVision(mode);
   chrome.storage.local.set({ [VISION_KEY]: { colorBlind: mode } });
 }));
@@ -206,4 +188,25 @@ CB.forEach((node) => node.addEventListener('change', () => {
 // which toggles the panel. The timestamp guarantees the value always differs.
 openBtn.addEventListener('click', () => {
   chrome.storage.local.set({ [SIGNAL_KEY]: Date.now() }, () => window.close());
+});
+
+/* ---------- load ---------- */
+chrome.storage.local.get([PRIVACY_KEY, LOCK_KEY, SITES_KEY, THEME_KEY, VISION_KEY], (res) => {
+  showLockState(Boolean(res && res[LOCK_KEY] && res[LOCK_KEY].record));
+
+  const sites = { ...SITES_DEFAULTS, ...(res && res[SITES_KEY]) };
+  Object.entries(S).forEach(([id, node]) => { node.checked = sites[id] !== false; });
+
+  const t = { ...THEME_DEFAULTS, ...(res && res[THEME_KEY]) };
+  Object.entries(T).forEach(([key, node]) => { node.value = t[key]; });
+  applyAccent(t.accent);
+
+  const v = { ...VISION_DEFAULTS, ...(res && res[VISION_KEY]) };
+  showVision(v.colorBlind);
+  const privacy = { ...PRIVACY_DEFAULTS, ...(res && res[PRIVACY_KEY]) };
+  Object.entries(P).forEach(([key, node]) => {
+    if (node.type === 'checkbox') node.checked = Boolean(privacy[key]);
+    else node.value = privacy[key];
+  });
+  reflectEnabled();
 });
