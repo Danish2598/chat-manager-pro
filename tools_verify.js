@@ -34,11 +34,17 @@
     console.log('   Supported hosts are claude.ai, chatgpt.com, chat.openai.com.');
   } else {
     pass('adapter resolved', `${SITE.label} (${SITE.id})`);
+    if (SITE.canDelete === false) warn('this site does not support bulk delete', SITE.deleteNote);
+    if (SITE.domOnly) warn('this site has no API — the sidebar is the only source');
   }
 
   head('3. Conversation list');
   if (!SITE) {
     fail('skipped — no adapter');
+  } else if (SITE.domOnly) {
+    const found = document.querySelectorAll(SITE.linkSelector).length;
+    (found ? pass : fail)(`sidebar scrape matched ${found} element(s)`);
+    if (!found) console.log(`   Fix linkSelector for ${SITE.id} in sites.js.`);
   } else {
     try {
       const list = await SITE.list();
@@ -71,18 +77,23 @@
     'chat titles':   ['a[href^="/chat/"]', 'a[href^="/cowork/"]', 'a[href^="/code/"]',
                       'a[href^="/project/"]', 'a[href^="/projects/"]',
                       'a[href^="/artifacts/"]', 'a[href^="/recents/"]',
-                      'a[href^="/c/"]', 'a[href^="/g/"]'],
+                      'a[href^="/c/"]', 'a[href^="/g/"]',
+                      'a[href^="/app/"]', '[data-test-id="conversation"]',
+                      '.conversation-title', '.conversation'],
     'messages':      ['[data-testid="user-message"]', '[data-testid="assistant-message"]',
                       '[data-testid="chat-message"]', '.font-claude-message', 'main .prose',
                       '[data-message-author-role]', '[data-testid^="conversation-turn"]',
-                      'main .markdown'],
+                      'main .markdown', 'message-content', '.model-response-text',
+                      'user-query-content', '.query-text'],
     'media':         ['main img', 'main video', 'main canvas', '[data-testid="file-thumbnail"]'],
     'account':       ['[data-testid="user-menu-button"]', '[data-testid="account-menu"]',
                       'nav footer', 'aside footer', '[data-testid="profile-button"]',
-                      '[data-testid="accounts-profile-button"]'],
+                      '[data-testid="accounts-profile-button"]', '.user-name',
+                      '[aria-label^="Google Account"]'],
     'message input': ['main [contenteditable="true"]', 'main .ProseMirror', 'main textarea',
                       '[data-testid="chat-input"]', 'fieldset [contenteditable="true"]',
-                      '#prompt-textarea', '#composer-background [contenteditable="true"]'],
+                      '#prompt-textarea', '#composer-background [contenteditable="true"]',
+                      'rich-textarea', '.ql-editor'],
   };
 
   for (const [label, sels] of Object.entries(targets)) {

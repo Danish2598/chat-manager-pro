@@ -67,7 +67,9 @@
     id: 'claude',
     label: 'Claude',
     host: /(^|\.)claude\.ai$/i,
+    canDelete: true,
     newChatUrl: '/new',
+    conversationUrl: (id) => `/chat/${id}`,
     linkSelector: 'a[href^="/chat/"], a[href^="/cowork/"], a[href^="/code/"]',
     hrefPattern: /^\/(?:chat|cowork|code)\/([A-Za-z0-9_-]{8,})/i,
 
@@ -153,7 +155,9 @@
     id: 'chatgpt',
     label: 'ChatGPT',
     host: /(^|\.)chatgpt\.com$|(^|\.)chat\.openai\.com$/i,
+    canDelete: true,
     newChatUrl: '/',
+    conversationUrl: (id) => `/c/${id}`,
     linkSelector: 'a[href^="/c/"], a[href^="/g/"]',
     hrefPattern: /^\/(?:c|g)\/([A-Za-z0-9_-]{8,})/i,
 
@@ -230,7 +234,45 @@
     },
   };
 
-  const SITES = [CLAUDE, CHATGPT];
+  /* ================================================================ *
+   * Gemini — gemini.google.com
+   *
+   * Deliberately limited, and honest about it.
+   *
+   * Gemini exposes no REST surface comparable to the other two: its
+   * conversation list and delete flow go through Google's internal
+   * `batchexecute` RPC — unversioned, obfuscated, and hostile to
+   * automation. Driving deletion through the page's own menus instead
+   * would mean synthesising clicks through a UI that changes often, on
+   * an action that is irreversible. That is not a trade worth making.
+   *
+   * So on Gemini this extension does what it can do safely: blur, screen
+   * lock, and search/sort over the sidebar. `canDelete: false` makes the
+   * panel say so rather than offering a button that fails.
+   * ================================================================ */
+  const GEMINI = {
+    id: 'gemini',
+    label: 'Gemini',
+    host: /(^|\.)gemini\.google\.com$/i,
+    canDelete: false,
+    deleteNote: 'Bulk delete is not available on Gemini — it exposes no API for it. '
+      + 'Search, sort, blur and lock all work.',
+    domOnly: true,            // no API worth attempting; go straight to the DOM
+    allowSyntheticIds: true,  // sidebar entries are not always links
+    newChatUrl: '/app',
+    conversationUrl: null,
+    linkSelector: 'a[href^="/app/"], [data-test-id="conversation"], .conversation',
+    hrefPattern: /^\/app\/([A-Za-z0-9_-]{6,})/i,
+
+    async list() {
+      throw new Error('Gemini has no listing API — using the sidebar instead');
+    },
+    async remove() {
+      throw new Error('deleting Gemini chats is not supported');
+    },
+  };
+
+  const SITES = [CLAUDE, CHATGPT, GEMINI];
   window.cmpSites = SITES;
   window.cmpSite = SITES.find((s) => s.host.test(location.hostname)) || null;
 })();

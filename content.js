@@ -288,18 +288,33 @@
     const panel = document.getElementById('cmp-root');
     const seen = new Set();
     const out = [];
-    document.querySelectorAll(SITE.linkSelector).forEach((a) => {
-      if (panel && panel.contains(a)) return;   // skip our own rows
-      const m = (a.getAttribute('href') || '').match(SITE.hrefPattern);
-      if (!m || seen.has(m[1])) return;
-      seen.add(m[1]);
+
+    document.querySelectorAll(SITE.linkSelector).forEach((node, index) => {
+      if (panel && panel.contains(node)) return;   // skip our own rows
+      const title = (node.textContent || '').trim();
+      if (!title) return;
+
+      const href = (node.getAttribute && node.getAttribute('href')) || '';
+      const match = href.match(SITE.hrefPattern);
+
+      let uuid;
+      let url = null;
+      if (match) {
+        uuid = match[1];
+        url = href;
+      } else if (SITE.allowSyntheticIds) {
+        // Some sidebars render entries as buttons, not links. Without a real
+        // id we can still list and search them — we just cannot link or delete.
+        uuid = `dom:${index}:${title.slice(0, 60)}`;
+      } else {
+        return;
+      }
+
+      if (seen.has(uuid)) return;
+      seen.add(uuid);
       out.push({
-        uuid: m[1],
-        title: (a.textContent || '').trim() || 'Untitled chat',
-        summary: '',
-        updated: null,
-        created: null,
-        hasDate: false,
+        uuid, title, url,
+        summary: '', updated: null, created: null, hasDate: false,
       });
     });
     return out;
@@ -309,6 +324,16 @@
     state.loading = true;
     state.error = null;
     render();
+
+    if (SITE.domOnly) {
+      // This site has no usable API; the sidebar is the only source.
+      state.chats = fetchViaDom();
+      state.source = 'dom';
+      state.loading = false;
+      pruneSelection();
+      render();
+      return;
+    }
 
     try {
       state.chats = await SITE.list();
@@ -339,12 +364,15 @@
       }
     }
 
-    // Drop selections for chats that no longer exist.
-    const live = new Set(state.chats.map((c) => c.uuid));
-    [...state.selected].forEach((id) => { if (!live.has(id)) state.selected.delete(id); });
-
+    pruneSelection();
     state.loading = false;
     render();
+  }
+
+  /** Drop selections for chats that no longer exist. */
+  function pruneSelection() {
+    const live = new Set(state.chats.map((c) => c.uuid));
+    [...state.selected].forEach((id) => { if (!live.has(id)) state.selected.delete(id); });
   }
 
   /* ------------------------------------------------------------------ *
@@ -538,6 +566,12 @@
     deleteBtn.type = 'button';
     deleteBtn.addEventListener('click', confirmDelete);
     footer.appendChild(deleteBtn);
+
+    if (SITE.canDelete === false) {
+      // Say so plainly instead of offering a button that would fail.
+      deleteBtn.remove();
+      footer.appendChild(el('span', 'cmp-footer-note', SITE.deleteNote || 'Delete is unavailable here.'));
+    }
     panel.appendChild(footer);
 
     root.appendChild(panel);
@@ -618,13 +652,16 @@
       if (meta) body.appendChild(el('div', 'cmp-item-meta', meta));
       row.appendChild(body);
 
-      const open = el('a', 'cmp-open-link', '↗');
-      open.href = SITE.conversationUrl
-        ? SITE.conversationUrl(chat.uuid)
-        : `/${SITE.id === 'chatgpt' ? 'c' : 'chat'}/${chat.uuid}`;
-      open.title = 'Open chat';
-      open.addEventListener('click', (ev) => ev.stopPropagation());
-      row.appendChild(open);
+      const href = chat.url
+        || (SITE.conversationUrl ? SITE.conversationUrl(chat.uuid) : null);
+      let open = null;
+      if (href) {
+        open = el('a', 'cmp-open-link', '↗');
+        open.href = href;
+        open.title = 'Open chat';
+        open.addEventListener('click', (ev) => ev.stopPropagation());
+        row.appendChild(open);
+      }
 
       // Clicking anywhere on the row toggles, matching list conventions.
       row.addEventListener('click', (ev) => {
@@ -659,6 +696,7 @@
   function updateFooter(visibleCount) {
     const n = state.selected.size;
     countEl.textContent = `${n} selected` + (visibleCount ? ` · ${visibleCount} shown` : '');
+    if (SITE.canDelete === false) return;
     deleteBtn.textContent = n ? `Delete ${n}` : 'Delete selected';
     deleteBtn.disabled = n === 0 || state.busy;
     deleteBtn.classList.toggle('cmp-hidden', n === 0);
@@ -668,6 +706,7 @@
    * Delete pipeline: confirm -> optional backup -> undo window -> run
    * ------------------------------------------------------------------ */
   function confirmDelete() {
+    if (SITE.canDelete === false) return;
     const targets = state.chats.filter((c) => state.selected.has(c.uuid));
     if (!targets.length || state.busy) return;
 

@@ -1,12 +1,12 @@
 # Chat Manager Pro
 
-*Store listing name: **Chat Manager Pro – Bulk Delete & Privacy for Claude & ChatGPT**.
+*Store listing name: **Chat Manager Pro – Bulk Delete & Privacy for AI Chats**.
 The longer name carries the search keywords; the toolbar tooltip and this repo
 stay on the short one.*
 
 A Chrome extension (Manifest V3) that adds search, sorting, date filtering,
 multi-select, safe bulk deletion, a privacy blur and a screen lock to your
-Claude.ai **and ChatGPT** chat lists.
+**Claude, ChatGPT and Gemini** chat lists.
 
 It injects a slide-out panel into the page rather than cramming a chat manager
 into a 280px toolbar popup, so managing two hundred conversations is actually
@@ -121,19 +121,31 @@ Press <kbd>Esc</kbd> to close the panel.
 
 ## Supported sites
 
-| Site | Hosts | Conversation routes |
-|---|---|---|
-| Claude | `claude.ai` | `/chat/`, `/cowork/`, `/code/` |
-| ChatGPT | `chatgpt.com`, `chat.openai.com` | `/c/`, `/g/` |
+| Site | Hosts | Manage | Bulk delete | Blur + lock |
+|---|---|:--:|:--:|:--:|
+| Claude | `claude.ai` | ✓ | ✓ | ✓ |
+| ChatGPT | `chatgpt.com`, `chat.openai.com` | ✓ | ✓ | ✓ |
+| Gemini | `gemini.google.com` | ✓ | — | ✓ |
+
+**Gemini is deliberately limited.** It exposes no REST surface comparable to the
+other two — its conversation list and delete flow go through Google's internal
+`batchexecute` RPC, which is unversioned and hostile to automation. The
+alternative, synthesising clicks through Gemini's own menus, means driving a
+frequently-changing UI to perform an irreversible action. That trade isn't worth
+making, so the adapter sets `canDelete: false` and the panel says so plainly
+instead of offering a button that fails. Search, sort, blur and lock all work.
 
 Adding another site means adding **one object to `sites.js`** — an id, a host
 pattern, a link selector, and `list()` / `remove()`. Nothing in `content.js`
 changes; it is site-agnostic and never names a site directly.
 
-A note on Gemini, which is the obvious next candidate: it does not expose
-ordinary REST endpoints the way these two do. Its conversation list goes through
-Google's internal `batchexecute` RPC, so it is a materially harder problem and
-should be scoped before being promised anywhere.
+Adapters declare what they can do, and the UI follows:
+
+| Flag | Effect |
+|---|---|
+| `canDelete: false` | Delete button is removed; `deleteNote` shown instead |
+| `domOnly: true` | Skips the API attempt entirely, scrapes the sidebar |
+| `allowSyntheticIds` | Lists sidebar entries that aren't links (no delete, no open link) |
 
 ## How it reads your chats
 

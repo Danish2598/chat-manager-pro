@@ -9,10 +9,10 @@ and a mismatch here is how listings drift.
 ## Item name
 
 ```
-Chat Manager Pro – Bulk Delete & Privacy for Claude & ChatGPT
+Chat Manager Pro – Bulk Delete & Privacy for AI Chats
 ```
 
-61 / 75 characters.
+53 / 75 characters.
 
 The brand sits in the qualifier position, never leading. `Claude Chat Manager`
 would read as a first-party product and is the shape that gets pulled;
@@ -23,10 +23,10 @@ actually type into store search. Nobody searches "chat manager".
 ## Short description
 
 ```
-Bulk delete, search, sort and filter your Claude and ChatGPT chats. Blur them for privacy, and lock your screen when away.
+Bulk delete, search, sort and filter your Claude and ChatGPT chats. Blur and lock Claude, ChatGPT and Gemini.
 ```
 
-122 / 132 characters. The limit is hard and the upload fails at 133, so leave
+109 / 132 characters. The limit is hard and the upload fails at 133, so leave
 the margin alone when editing.
 
 ## Category
@@ -43,11 +43,17 @@ English (add locales later; each one is an extra listing to maintain).
 ## Detailed description
 
 ```
-Manage your Claude and ChatGPT conversations the way you actually want to.
+Manage your AI chat history the way you actually want to.
 
-Neither Claude nor ChatGPT lets you delete more than one chat at a time, search
-your full history, or sort and filter it. Chat Manager Pro adds all of that to
-both — plus a privacy mode for when you are working somewhere public.
+Claude, ChatGPT and Gemini all leave you deleting chats one at a time, with no
+search across your history and no way to sort or filter it. Chat Manager Pro
+adds that — plus a privacy mode for when you are working somewhere public.
+
+SUPPORTED SITES
+• Claude — manage, bulk delete, blur, lock
+• ChatGPT — manage, bulk delete, blur, lock
+• Gemini — manage, blur, lock (Gemini provides no API for deleting chats, so
+  bulk delete is not available there)
 
 
 BULK DELETE, SAFELY
@@ -100,7 +106,8 @@ PRIVATE BY DESIGN
 
 
 Claude is a trademark of Anthropic PBC. ChatGPT is a trademark of OpenAI.
-This extension is an independent project with no relationship to either company.
+Gemini is a trademark of Google LLC. This extension is an independent project
+with no relationship to any of them.
 ```
 
 ---
@@ -108,7 +115,7 @@ This extension is an independent project with no relationship to either company.
 ## Single purpose statement
 
 > Chat Manager Pro has one purpose: helping the user manage their own
-> conversation lists on claude.ai and chatgpt.com. Everything it does — search, sort, filter,
+> conversation lists on claude.ai, chatgpt.com and gemini.google.com. Everything it does — search, sort, filter,
 > multi-select, bulk delete, and visually shielding that list from onlookers —
 > serves managing that one list.
 

@@ -171,3 +171,21 @@ kbd {
 .msg { margin: 8px 0 0; font-size: 11.5px; color: var(--dim); min-height: 14px; }
 .msg-error { color: #c8443a; }
 @media (prefers-color-scheme: dark) { .msg-error { color: #e0655a; } }
+
+/* ---------- supported sites ---------- */
+.sites { margin-top: 10px; }
+.sites summary {
+  cursor: pointer;
+  font-size: 11.5px;
+  color: var(--dim);
+  list-style: none;
+}
+.sites summary::-webkit-details-marker { display: none; }
+.sites summary::before { content: "▸ "; }
+.sites[open] summary::before { content: "▾ "; }
+.sites summary:hover { color: var(--text); }
+.sites table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 11.5px; }
+.sites th, .sites td { text-align: center; padding: 3px 2px; }
+.sites th { color: var(--dim); font-weight: 500; font-size: 10.5px; }
+.sites td:first-child, .sites th:first-child { text-align: left; }
+.sites tr + tr td { border-top: 1px solid var(--border); }

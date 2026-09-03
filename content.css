@@ -381,6 +381,10 @@ html.cmp-privacy-on.cmp-blur-titles :is(
   a[href^="/recents/"],
   a[href^="/c/"],
   a[href^="/g/"],
+  a[href^="/app/"],
+  [data-test-id="conversation"],
+  .conversation-title,
+  .conversation,
   .cmp-item-title
 ) {
   filter: blur(var(--cmp-blur, 7px));
@@ -396,7 +400,11 @@ html.cmp-privacy-on.cmp-blur-messages :is(
   main .prose,
   [data-message-author-role],
   [data-testid^="conversation-turn"],
-  main .markdown
+  main .markdown,
+  message-content,
+  .model-response-text,
+  user-query-content,
+  .query-text
 ) {
   filter: blur(var(--cmp-blur, 7px));
   transition: filter 0.12s ease;
@@ -421,7 +429,9 @@ html.cmp-privacy-on.cmp-blur-input :is(
   [data-testid="chat-input"],
   fieldset [contenteditable="true"],
   #prompt-textarea,
-  #composer-background [contenteditable="true"]
+  #composer-background [contenteditable="true"],
+  rich-textarea,
+  .ql-editor
 ) {
   filter: blur(var(--cmp-blur, 7px));
   transition: filter 0.12s ease;
@@ -434,7 +444,9 @@ html.cmp-privacy-on.cmp-blur-account :is(
   nav footer,
   aside footer,
   [data-testid="profile-button"],
-  [data-testid="accounts-profile-button"]
+  [data-testid="accounts-profile-button"],
+  .user-name,
+  [aria-label^="Google Account"]
 ) {
   filter: blur(var(--cmp-blur, 7px));
   transition: filter 0.12s ease;
@@ -457,6 +469,10 @@ html.cmp-privacy-on.cmp-reveal-hover :is(
   a[href^="/recents/"],
   a[href^="/c/"],
   a[href^="/g/"],
+  a[href^="/app/"],
+  [data-test-id="conversation"],
+  .conversation-title,
+  .conversation,
   .cmp-item-title,
   [data-testid="user-message"],
   [data-testid="assistant-message"],
@@ -482,7 +498,15 @@ html.cmp-privacy-on.cmp-reveal-hover :is(
   #prompt-textarea,
   #composer-background [contenteditable="true"],
   [data-testid="profile-button"],
-  [data-testid="accounts-profile-button"]
+  [data-testid="accounts-profile-button"],
+  message-content,
+  .model-response-text,
+  user-query-content,
+  .query-text,
+  rich-textarea,
+  .ql-editor,
+  .user-name,
+  [aria-label^="Google Account"]
 ):hover {
   filter: none;
 }
@@ -605,4 +629,13 @@ html.cmp-locked body > *:not(#cmp-root) {
   border: 1px solid var(--cmp-border);
   color: var(--cmp-text-dim);
   white-space: nowrap;
+}
+
+/* Shown instead of the delete button on sites that cannot support it. */
+.cmp-footer-note {
+  font-size: 11.5px;
+  line-height: 1.4;
+  color: var(--cmp-text-dim);
+  text-align: right;
+  max-width: 260px;
 }
