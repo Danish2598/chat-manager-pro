@@ -52,9 +52,9 @@
   console.log('   Expected when a theme is set: cmp-font-*, cmp-size-*, cmp-density-*, cmp-accent-*');
 
   H('3. Do the title selectors match anything here?');
-  const TITLES = ['a[href^="/chat/"]', 'a[href^="/cowork/"]', 'a[href^="/code/"]',
-    'a[href^="/project/"]', 'a[href^="/projects/"]', 'a[href^="/artifacts/"]',
-    'a[href^="/recents/"]', 'a[href^="/c/"]', 'a[href^="/g/"]', 'a[href^="/app/"]',
+  const TITLES = ['a[href^="/chat/"]:not([href$="/"])', 'a[href^="/cowork/"]:not([href$="/"])', 'a[href^="/code/"]:not([href$="/"])',
+    'a[href^="/project/"]:not([href$="/"])', 'a[href^="/projects/"]:not([href$="/"])', 'a[href^="/artifacts/"]:not([href$="/"])',
+    'a[href^="/recents/"]:not([href$="/"])', 'a[href^="/c/"]:not([href$="/"])', 'a[href^="/g/"]:not([href$="/"])', 'a[href^="/app/"]:not([href$="/"])',
     '[data-test-id="conversation"]', '.conversation-title', '.conversation'];
   let titleHits = 0;
   TITLES.forEach((s) => {
