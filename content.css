@@ -638,9 +638,14 @@ html.cmp-locked body > *:not(#cmp-root) {
  * Every rule is opt-in: the default choice adds no class at all, so an
  * untouched install changes nothing on the page.
  *
- * The selector list below is GENERATED FROM the PRIVACY BLUR titles rule
- * above. If you add a site there, re-run the generator in the commit that
- * introduced this block, or add the selector to both lists by hand.
+ * Two things these rules need that the blur does not:
+ *   !important   — the blur sets `filter`, which these sites never touch.
+ *                  font-family, font-size and color they set constantly.
+ *   descendants  — a sidebar entry is usually <a><div>Title</div></a>, and a
+ *                  child that sets its own size or colour would otherwise win.
+ *
+ * The selector list is GENERATED FROM the PRIVACY BLUR titles rule above.
+ * Adding a site there and regenerating covers blur and appearance together.
  * ========================================================================== */
 
 /* --- font ---------------------------------------------------------------- */
@@ -659,7 +664,23 @@ html.cmp-font-serif :is(
   .conversation-title,
   .conversation,
   .cmp-item-title
-) {
+),
+html.cmp-font-serif :is(
+  a[href^="/chat/"],
+  a[href^="/cowork/"],
+  a[href^="/code/"],
+  a[href^="/project/"],
+  a[href^="/projects/"],
+  a[href^="/artifacts/"],
+  a[href^="/recents/"],
+  a[href^="/c/"],
+  a[href^="/g/"],
+  a[href^="/app/"],
+  [data-test-id="conversation"],
+  .conversation-title,
+  .conversation,
+  .cmp-item-title
+) * {
   font-family: ui-serif, Georgia, "Times New Roman", serif !important;
 }
 
@@ -678,7 +699,23 @@ html.cmp-font-mono :is(
   .conversation-title,
   .conversation,
   .cmp-item-title
-) {
+),
+html.cmp-font-mono :is(
+  a[href^="/chat/"],
+  a[href^="/cowork/"],
+  a[href^="/code/"],
+  a[href^="/project/"],
+  a[href^="/projects/"],
+  a[href^="/artifacts/"],
+  a[href^="/recents/"],
+  a[href^="/c/"],
+  a[href^="/g/"],
+  a[href^="/app/"],
+  [data-test-id="conversation"],
+  .conversation-title,
+  .conversation,
+  .cmp-item-title
+) * {
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace !important;
   letter-spacing: -0.01em !important;
 }
@@ -699,7 +736,23 @@ html.cmp-size-small :is(
   .conversation-title,
   .conversation,
   .cmp-item-title
-) {
+),
+html.cmp-size-small :is(
+  a[href^="/chat/"],
+  a[href^="/cowork/"],
+  a[href^="/code/"],
+  a[href^="/project/"],
+  a[href^="/projects/"],
+  a[href^="/artifacts/"],
+  a[href^="/recents/"],
+  a[href^="/c/"],
+  a[href^="/g/"],
+  a[href^="/app/"],
+  [data-test-id="conversation"],
+  .conversation-title,
+  .conversation,
+  .cmp-item-title
+) * {
   font-size: 12px !important;
 }
 
@@ -718,13 +771,30 @@ html.cmp-size-large :is(
   .conversation-title,
   .conversation,
   .cmp-item-title
-) {
+),
+html.cmp-size-large :is(
+  a[href^="/chat/"],
+  a[href^="/cowork/"],
+  a[href^="/code/"],
+  a[href^="/project/"],
+  a[href^="/projects/"],
+  a[href^="/artifacts/"],
+  a[href^="/recents/"],
+  a[href^="/c/"],
+  a[href^="/g/"],
+  a[href^="/app/"],
+  [data-test-id="conversation"],
+  .conversation-title,
+  .conversation,
+  .cmp-item-title
+) * {
   font-size: 15.5px !important;
 }
 
 /* --- density -------------------------------------------------------------- */
-/* On the host site the link usually is the row, so tightening it is
-   best-effort. In our own panel it is exact. */
+/* Padding applies to the row itself, never to what is inside it. On the host
+   site the link usually is the row, so this is best-effort there; in our own
+   panel it is exact. */
 html.cmp-density-compact :is(
   a[href^="/chat/"],
   a[href^="/cowork/"],
@@ -747,8 +817,8 @@ html.cmp-density-compact :is(
 }
 
 html.cmp-density-compact #cmp-root .cmp-item {
-  padding-top: 4px !important;
-  padding-bottom: 4px !important;
+  padding-top: 4px;
+  padding-bottom: 4px;
 }
 
 /* --- accent --------------------------------------------------------------- */
@@ -761,8 +831,7 @@ html.cmp-accent-amber { --cmp-accent-user: #c07d1f; }
 html.cmp-accent-rose { --cmp-accent-user: #cf5566; }
 html.cmp-accent-slate { --cmp-accent-user: #5b6b7c; }
 
-html:is(.cmp-accent-blue, .cmp-accent-teal, .cmp-accent-violet,
-        .cmp-accent-amber, .cmp-accent-rose, .cmp-accent-slate) :is(
+html:is(.cmp-accent-blue, .cmp-accent-teal, .cmp-accent-violet, .cmp-accent-amber, .cmp-accent-rose, .cmp-accent-slate) :is(
   a[href^="/chat/"],
   a[href^="/cowork/"],
   a[href^="/code/"],
@@ -777,6 +846,22 @@ html:is(.cmp-accent-blue, .cmp-accent-teal, .cmp-accent-violet,
   .conversation-title,
   .conversation,
   .cmp-item-title
-) {
+),
+html:is(.cmp-accent-blue, .cmp-accent-teal, .cmp-accent-violet, .cmp-accent-amber, .cmp-accent-rose, .cmp-accent-slate) :is(
+  a[href^="/chat/"],
+  a[href^="/cowork/"],
+  a[href^="/code/"],
+  a[href^="/project/"],
+  a[href^="/projects/"],
+  a[href^="/artifacts/"],
+  a[href^="/recents/"],
+  a[href^="/c/"],
+  a[href^="/g/"],
+  a[href^="/app/"],
+  [data-test-id="conversation"],
+  .conversation-title,
+  .conversation,
+  .cmp-item-title
+) * {
   color: var(--cmp-accent-user) !important;
 }
