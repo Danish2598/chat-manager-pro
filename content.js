@@ -32,6 +32,7 @@
   const PRIVACY_SIGNAL = 'cmp.privacySignal';
   const LOCK_KEY = 'cmp.lock';
   const LOCK_SIGNAL = 'cmp.lockSignal';
+  const SITES_KEY = 'cmp.sites';
   const DEFAULTS = { sort: 'newest', filter: 'all' };
   const PRIVACY_DEFAULTS = {
     on: false,
@@ -44,6 +45,8 @@
     strength: 'medium',
   };
   const LOCK_DEFAULTS = { record: null, locked: false };
+  // Which sites the extension is allowed to act on. Absent means enabled.
+  const SITES_DEFAULTS = { claude: true, chatgpt: true, gemini: true };
   const PAGE_SIZE = 100;      // conversations fetched per request
   const MAX_PAGES = 40;       // hard stop so a bad cursor can't loop forever
   const DELETE_GAP_MS = 350;  // spacing between deletes, avoids rate limiting
@@ -81,15 +84,21 @@
   const prefs = { ...DEFAULTS };
   const privacy = { ...PRIVACY_DEFAULTS };
   const lock = { ...LOCK_DEFAULTS };
+  const siteEnabled = { ...SITES_DEFAULTS };
+
+  /** Whether the extension should do anything at all on this site. */
+  let active = false;
+  const isEnabled = () => siteEnabled[SITE.id] !== false;
 
   function loadPrefs() {
     return new Promise((resolve) => {
       try {
-        chrome.storage.local.get([PREFS_KEY, PRIVACY_KEY, LOCK_KEY], (res) => {
+        chrome.storage.local.get([PREFS_KEY, PRIVACY_KEY, LOCK_KEY, SITES_KEY], (res) => {
           if (!chrome.runtime.lastError && res) {
             if (res[PREFS_KEY]) Object.assign(prefs, res[PREFS_KEY]);
             if (res[PRIVACY_KEY]) Object.assign(privacy, res[PRIVACY_KEY]);
             if (res[LOCK_KEY]) Object.assign(lock, res[LOCK_KEY]);
+            if (res[SITES_KEY]) Object.assign(siteEnabled, res[SITES_KEY]);
           }
           resolve();
         });
@@ -119,7 +128,9 @@
    */
   function applyPrivacy() {
     const c = document.documentElement.classList;
-    c.toggle('cmp-privacy-on', privacy.on);
+    // Every blur rule requires cmp-privacy-on, so gating it here is enough
+    // to switch the whole feature off on a disabled site.
+    c.toggle('cmp-privacy-on', active && privacy.on);
     c.toggle('cmp-blur-titles', privacy.titles);
     c.toggle('cmp-blur-messages', privacy.messages);
     c.toggle('cmp-blur-media', privacy.media);
@@ -168,8 +179,8 @@
       lock.locked = false;
       saveLock();
     }
-    document.documentElement.classList.toggle('cmp-locked', Boolean(lock.locked));
-    if (lock.locked) showLockScreen();
+    document.documentElement.classList.toggle('cmp-locked', active && Boolean(lock.locked));
+    if (active && lock.locked) showLockScreen();
     else if (lockEl) {
       lockEl.dispatchEvent(new CustomEvent('cmp-teardown'));
       lockEl.remove();
@@ -887,6 +898,28 @@
     }
   }
 
+  /** Switch the extension on or off for this site, live. */
+  function applyEnabled() {
+    const next = isEnabled();
+    if (next === active) return;
+    active = next;
+
+    whenBodyReady(() => {
+      if (active) {
+        if (!root) buildUI();
+        root.style.display = '';
+        applyPrivacy();
+        applyLock();
+        render();
+      } else {
+        closePanel();
+        if (root) root.style.display = 'none';
+        applyPrivacy();   // clears the blur classes
+        applyLock();      // clears the lock class and overlay
+      }
+    });
+  }
+
   /* ------------------------------------------------------------------ *
    * Panel open/close
    * ------------------------------------------------------------------ */
@@ -916,8 +949,13 @@
     chrome.storage.onChanged.addListener((changes, area) => {
       if (area !== 'local') return;
       if (changes[SIGNAL_KEY]) togglePanel();
-      if (changes[PRIVACY_SIGNAL]) togglePrivacy();
-      if (changes[LOCK_SIGNAL]) requestLock();
+      if (changes[SITES_KEY] && changes[SITES_KEY].newValue) {
+        Object.assign(siteEnabled, changes[SITES_KEY].newValue);
+        applyEnabled();
+      }
+      // A disabled site ignores shortcuts; enabled tabs still act on them.
+      if (changes[PRIVACY_SIGNAL] && active) togglePrivacy();
+      if (changes[LOCK_SIGNAL] && active) requestLock();
       if (changes[LOCK_KEY] && changes[LOCK_KEY].newValue) {
         // Locking or unlocking one tab applies to every Claude tab.
         Object.assign(lock, changes[LOCK_KEY].newValue);
@@ -939,6 +977,7 @@
   } catch { /* extension context unavailable */ }
 
   document.addEventListener('keydown', (ev) => {
+    if (!active) return;
     if (ev.key === 'Escape' && lock.locked) return;
     if (ev.key === 'Escape' && state.open) {
       const overlay = root && root.querySelector('.cmp-modal-overlay');
@@ -954,6 +993,9 @@
   }
 
   loadPrefs().then(() => {
+    active = isEnabled();
+    if (!active) return;   // switched off for this site — do nothing at all
+
     // Blur first, and as early as possible. We run at document_start, so this
     // lands before the page paints its content — a privacy tool that flashes
     // the very thing it is meant to hide is worse than no privacy tool.

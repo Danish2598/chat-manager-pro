@@ -17,19 +17,25 @@
       bottom-right of the page.
     </p>
 
-    <details class="sites">
-      <summary>Supported sites</summary>
-      <table>
-        <tr><th></th><th>Manage</th><th>Delete</th><th>Blur&nbsp;+&nbsp;lock</th></tr>
-        <tr><td>Claude</td><td>✓</td><td>✓</td><td>✓</td></tr>
-        <tr><td>ChatGPT</td><td>✓</td><td>✓</td><td>✓</td></tr>
-        <tr><td>Gemini</td><td>✓</td><td>—</td><td>✓</td></tr>
-      </table>
+    <section class="block">
+      <h2>Active on</h2>
       <p class="hint hint-tight">
-        Gemini provides no API for deleting chats, so bulk delete is unavailable
-        there. Everything else works.
+        Turn a site off and the extension does nothing there — no panel, no
+        blur, no shortcuts. Takes effect immediately.
       </p>
-    </details>
+
+      <label class="site"><input type="checkbox" id="s-claude" />
+        <span class="site-name">Claude</span>
+        <span class="site-caps">manage · delete · blur · lock</span></label>
+
+      <label class="site"><input type="checkbox" id="s-chatgpt" />
+        <span class="site-name">ChatGPT</span>
+        <span class="site-caps">manage · delete · blur · lock</span></label>
+
+      <label class="site"><input type="checkbox" id="s-gemini" />
+        <span class="site-name">Gemini</span>
+        <span class="site-caps">manage · blur · lock — no bulk delete</span></label>
+    </section>
 
     <section class="block">
       <div class="block-head">

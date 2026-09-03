@@ -11,10 +11,12 @@
 const PREFS_KEY = 'cmp.prefs';
 const PRIVACY_KEY = 'cmp.privacy';
 const LOCK_KEY = 'cmp.lock';
+const SITES_KEY = 'cmp.sites';
 const SIGNAL_KEY = 'cmp.toggleSignal';
 const LOCK_SIGNAL = 'cmp.lockSignal';
 
 const DEFAULTS = { sort: 'newest', filter: 'all' };
+const SITES_DEFAULTS = { claude: true, chatgpt: true, gemini: true };
 const PRIVACY_DEFAULTS = {
   on: false, titles: true, messages: true, media: true,
   account: true, input: true, hover: true, strength: 'medium',
@@ -38,6 +40,22 @@ const P = {
   strength: $('p-strength'),
 };
 const optsBox = $('p-opts');
+
+// Per-site switches. The content script reads this and goes fully inert on a
+// site that is turned off.
+const S = {
+  claude: $('s-claude'),
+  chatgpt: $('s-chatgpt'),
+  gemini: $('s-gemini'),
+};
+
+function saveSites() {
+  const sites = {};
+  Object.entries(S).forEach(([id, node]) => { sites[id] = node.checked; });
+  chrome.storage.local.set({ [SITES_KEY]: sites });
+}
+
+Object.values(S).forEach((node) => node.addEventListener('change', saveSites));
 
 /* ---------- screen lock ---------- */
 const lockUnset = $('lock-unset');
@@ -84,8 +102,11 @@ $('lock-now').addEventListener('click', () => {
 });
 
 /* ---------- load ---------- */
-chrome.storage.local.get([PREFS_KEY, PRIVACY_KEY, LOCK_KEY], (res) => {
+chrome.storage.local.get([PREFS_KEY, PRIVACY_KEY, LOCK_KEY, SITES_KEY], (res) => {
   showLockState(Boolean(res && res[LOCK_KEY] && res[LOCK_KEY].record));
+
+  const sites = { ...SITES_DEFAULTS, ...(res && res[SITES_KEY]) };
+  Object.entries(S).forEach(([id, node]) => { node.checked = sites[id] !== false; });
   const prefs = { ...DEFAULTS, ...(res && res[PREFS_KEY]) };
   sortSel.value = prefs.sort;
   filterSel.value = prefs.filter;

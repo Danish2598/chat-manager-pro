@@ -127,6 +127,20 @@ Press <kbd>Esc</kbd> to close the panel.
 | ChatGPT | `chatgpt.com`, `chat.openai.com` | ✓ | ✓ | ✓ |
 | Gemini | `gemini.google.com` | ✓ | — | ✓ |
 
+### Turning sites on and off
+
+Each site has a switch in the toolbar popup, under **Active on**. Turn one off
+and the extension goes fully inert there — no panel, no blur, no keyboard
+shortcuts, no injected classes. It takes effect immediately, with no reload.
+
+This is a behaviour switch, not a permission change. The host stays in the
+manifest, so Chrome still lists it on the install prompt; the extension simply
+declines to act. Removing a host from the prompt entirely would mean a separate
+build, or optional host permissions and dynamic script registration.
+
+Shortcuts follow the same rule: pressing Alt+Shift+B while on a disabled site
+does nothing there, but still toggles any enabled tabs you have open.
+
 **Gemini is deliberately limited.** It exposes no REST surface comparable to the
 other two — its conversation list and delete flow go through Google's internal
 `batchexecute` RPC, which is unversioned and hostile to automation. The
