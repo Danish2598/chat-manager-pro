@@ -2,13 +2,13 @@
  * Chat Manager Pro — toolbar popup.
  *
  * Deliberately thin: the real UI is the in-page panel. This is a launcher and
- * a settings surface. It talks to the content script through chrome.storage
+ * a settings surface. Sort and filter deliberately live only in the panel —
+ * duplicating them here meant a control whose effect you could not see. It talks to the content script through chrome.storage
  * rather than tab messaging, which is what lets the extension ship with
  * "storage" as its only permission.
  */
 'use strict';
 
-const PREFS_KEY = 'cmp.prefs';
 const PRIVACY_KEY = 'cmp.privacy';
 const LOCK_KEY = 'cmp.lock';
 const SITES_KEY = 'cmp.sites';
@@ -16,7 +16,6 @@ const THEME_KEY = 'cmp.theme';
 const SIGNAL_KEY = 'cmp.toggleSignal';
 const LOCK_SIGNAL = 'cmp.lockSignal';
 
-const DEFAULTS = { sort: 'newest', filter: 'all' };
 const SITES_DEFAULTS = { claude: true, chatgpt: true, gemini: true };
 const THEME_DEFAULTS = { font: 'system', size: 'medium', density: 'comfortable', accent: 'default' };
 const PRIVACY_DEFAULTS = {
@@ -27,8 +26,6 @@ const PRIVACY_DEFAULTS = {
 const $ = (id) => document.getElementById(id);
 
 const openBtn = $('open');
-const sortSel = $('sort');
-const filterSel = $('filter');
 
 // Privacy controls, keyed by the privacy setting each one drives.
 const P = {
@@ -139,7 +136,7 @@ $('lock-now').addEventListener('click', () => {
 });
 
 /* ---------- load ---------- */
-chrome.storage.local.get([PREFS_KEY, PRIVACY_KEY, LOCK_KEY, SITES_KEY, THEME_KEY], (res) => {
+chrome.storage.local.get([PRIVACY_KEY, LOCK_KEY, SITES_KEY, THEME_KEY], (res) => {
   showLockState(Boolean(res && res[LOCK_KEY] && res[LOCK_KEY].record));
 
   const sites = { ...SITES_DEFAULTS, ...(res && res[SITES_KEY]) };
@@ -148,10 +145,6 @@ chrome.storage.local.get([PREFS_KEY, PRIVACY_KEY, LOCK_KEY, SITES_KEY, THEME_KEY
   const t = { ...THEME_DEFAULTS, ...(res && res[THEME_KEY]) };
   Object.entries(T).forEach(([key, node]) => { node.value = t[key]; });
   applyAccent(t.accent);
-  const prefs = { ...DEFAULTS, ...(res && res[PREFS_KEY]) };
-  sortSel.value = prefs.sort;
-  filterSel.value = prefs.filter;
-
   const privacy = { ...PRIVACY_DEFAULTS, ...(res && res[PRIVACY_KEY]) };
   Object.entries(P).forEach(([key, node]) => {
     if (node.type === 'checkbox') node.checked = Boolean(privacy[key]);
@@ -161,12 +154,6 @@ chrome.storage.local.get([PREFS_KEY, PRIVACY_KEY, LOCK_KEY, SITES_KEY, THEME_KEY
 });
 
 /* ---------- save ---------- */
-function savePrefs() {
-  chrome.storage.local.set({
-    [PREFS_KEY]: { sort: sortSel.value, filter: filterSel.value },
-  });
-}
-
 function savePrivacy() {
   const privacy = {};
   Object.entries(P).forEach(([key, node]) => {
@@ -181,8 +168,6 @@ function reflectEnabled() {
   optsBox.classList.toggle('disabled', !P.on.checked);
 }
 
-sortSel.addEventListener('change', savePrefs);
-filterSel.addEventListener('change', savePrefs);
 Object.values(P).forEach((node) => node.addEventListener('change', savePrivacy));
 
 /* ---------- launch ---------- */

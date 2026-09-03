@@ -26,8 +26,12 @@ practical.
 | **Privacy blur** | Hides chat titles, messages, media, account details and the message input until you hover them |
 | **Screen lock** | Password-locks the page when you step away, across every Claude tab |
 
-Sort and filter preferences persist. **Selections deliberately do not** — restoring
-a stale selection into a tool whose main action is irreversible is a footgun.
+Sort and filter live in the panel itself and persist between sessions. They are
+deliberately **not** duplicated in the popup: their only effect is on the panel's
+list, so a copy in the popup was a control whose result you could not see.
+
+**Selections deliberately do not persist** — restoring a stale selection into a
+tool whose main action is irreversible is a footgun.
 
 ---
 
