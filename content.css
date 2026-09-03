@@ -372,12 +372,6 @@ html.cmp-privacy-on.cmp-blur-titles :is(
   a[href^="/project/"],
   a[href^="/projects/"],
   a[href^="/artifacts/"],
-  a[href^="/chat/"],
-  a[href^="/cowork/"],
-  a[href^="/code/"],
-  a[href^="/project/"],
-  a[href^="/projects/"],
-  a[href^="/artifacts/"],
   a[href^="/recents/"],
   a[href^="/c/"],
   a[href^="/g/"],
@@ -454,12 +448,6 @@ html.cmp-privacy-on.cmp-blur-account :is(
 
 /* --- reveal on hover ----------------------------------------------------- */
 html.cmp-privacy-on.cmp-reveal-hover :is(
-  a[href^="/chat/"],
-  a[href^="/cowork/"],
-  a[href^="/code/"],
-  a[href^="/project/"],
-  a[href^="/projects/"],
-  a[href^="/artifacts/"],
   a[href^="/chat/"],
   a[href^="/cowork/"],
   a[href^="/code/"],
@@ -663,12 +651,6 @@ html.cmp-font-serif :is(
   a[href^="/project/"],
   a[href^="/projects/"],
   a[href^="/artifacts/"],
-  a[href^="/chat/"],
-  a[href^="/cowork/"],
-  a[href^="/code/"],
-  a[href^="/project/"],
-  a[href^="/projects/"],
-  a[href^="/artifacts/"],
   a[href^="/recents/"],
   a[href^="/c/"],
   a[href^="/g/"],
@@ -678,7 +660,7 @@ html.cmp-font-serif :is(
   .conversation,
   .cmp-item-title
 ) {
-  font-family: ui-serif, Georgia, "Times New Roman", serif;
+  font-family: ui-serif, Georgia, "Times New Roman", serif !important;
 }
 
 html.cmp-font-mono :is(
@@ -688,12 +670,6 @@ html.cmp-font-mono :is(
   a[href^="/project/"],
   a[href^="/projects/"],
   a[href^="/artifacts/"],
-  a[href^="/chat/"],
-  a[href^="/cowork/"],
-  a[href^="/code/"],
-  a[href^="/project/"],
-  a[href^="/projects/"],
-  a[href^="/artifacts/"],
   a[href^="/recents/"],
   a[href^="/c/"],
   a[href^="/g/"],
@@ -703,8 +679,8 @@ html.cmp-font-mono :is(
   .conversation,
   .cmp-item-title
 ) {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  letter-spacing: -0.01em;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace !important;
+  letter-spacing: -0.01em !important;
 }
 
 /* --- size ---------------------------------------------------------------- */
@@ -715,12 +691,6 @@ html.cmp-size-small :is(
   a[href^="/project/"],
   a[href^="/projects/"],
   a[href^="/artifacts/"],
-  a[href^="/chat/"],
-  a[href^="/cowork/"],
-  a[href^="/code/"],
-  a[href^="/project/"],
-  a[href^="/projects/"],
-  a[href^="/artifacts/"],
   a[href^="/recents/"],
   a[href^="/c/"],
   a[href^="/g/"],
@@ -730,7 +700,7 @@ html.cmp-size-small :is(
   .conversation,
   .cmp-item-title
 ) {
-  font-size: 12px;
+  font-size: 12px !important;
 }
 
 html.cmp-size-large :is(
@@ -740,12 +710,6 @@ html.cmp-size-large :is(
   a[href^="/project/"],
   a[href^="/projects/"],
   a[href^="/artifacts/"],
-  a[href^="/chat/"],
-  a[href^="/cowork/"],
-  a[href^="/code/"],
-  a[href^="/project/"],
-  a[href^="/projects/"],
-  a[href^="/artifacts/"],
   a[href^="/recents/"],
   a[href^="/c/"],
   a[href^="/g/"],
@@ -755,7 +719,7 @@ html.cmp-size-large :is(
   .conversation,
   .cmp-item-title
 ) {
-  font-size: 15.5px;
+  font-size: 15.5px !important;
 }
 
 /* --- density -------------------------------------------------------------- */
@@ -768,12 +732,6 @@ html.cmp-density-compact :is(
   a[href^="/project/"],
   a[href^="/projects/"],
   a[href^="/artifacts/"],
-  a[href^="/chat/"],
-  a[href^="/cowork/"],
-  a[href^="/code/"],
-  a[href^="/project/"],
-  a[href^="/projects/"],
-  a[href^="/artifacts/"],
   a[href^="/recents/"],
   a[href^="/c/"],
   a[href^="/g/"],
@@ -783,14 +741,14 @@ html.cmp-density-compact :is(
   .conversation,
   .cmp-item-title
 ) {
-  padding-top: 2px;
-  padding-bottom: 2px;
-  line-height: 1.25;
+  padding-top: 2px !important;
+  padding-bottom: 2px !important;
+  line-height: 1.25 !important;
 }
 
 html.cmp-density-compact #cmp-root .cmp-item {
-  padding-top: 4px;
-  padding-bottom: 4px;
+  padding-top: 4px !important;
+  padding-bottom: 4px !important;
 }
 
 /* --- accent --------------------------------------------------------------- */
@@ -811,12 +769,6 @@ html:is(.cmp-accent-blue, .cmp-accent-teal, .cmp-accent-violet,
   a[href^="/project/"],
   a[href^="/projects/"],
   a[href^="/artifacts/"],
-  a[href^="/chat/"],
-  a[href^="/cowork/"],
-  a[href^="/code/"],
-  a[href^="/project/"],
-  a[href^="/projects/"],
-  a[href^="/artifacts/"],
   a[href^="/recents/"],
   a[href^="/c/"],
   a[href^="/g/"],
@@ -826,5 +778,5 @@ html:is(.cmp-accent-blue, .cmp-accent-teal, .cmp-accent-violet,
   .conversation,
   .cmp-item-title
 ) {
-  color: var(--cmp-accent-user);
+  color: var(--cmp-accent-user) !important;
 }

@@ -35,6 +35,12 @@ during development; this tells you which ones are real.
 
 It is **read-only** — it never deletes, modifies or sends anything.
 
+It checks only what the page and the extension share — the DOM, the classes on
+`<html>`, and same-origin endpoints. It deliberately does not read extension
+internals, because the console runs in the page's world while the extension runs
+in an isolated one with its own `window`; a script that checked `window.cmpSite`
+would report "missing" even on a perfectly working install.
+
 **Reading the output**
 
 | Result | Meaning |

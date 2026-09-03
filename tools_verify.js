@@ -1,134 +1,143 @@
 /**
  * Chat Manager Pro — read-only diagnostic.
  *
- * Paste into the DevTools console on an open, signed-in claude.ai or
- * chatgpt.com tab. It detects which site it is on.
- * It reports whether the endpoints and selectors the extension relies on
- * actually match this build of the site.
+ * Paste into the DevTools console on a signed-in claude.ai, chatgpt.com or
+ * gemini.google.com tab, then send the output back.
  *
- * SAFE: this only reads. It never deletes, modifies or sends anything.
- * The selector lists below mirror CFG in content.js and the PRIVACY BLUR
- * block in content.css — if you edit those, edit these to match.
+ * SAFE: only reads. Never deletes, modifies or sends anything.
+ *
+ * NOTE ON CONTEXT: the console runs in the page's world, while the extension
+ * runs in an isolated world with its own `window`. So this script deliberately
+ * checks only things both worlds share — the DOM, classes on <html>, and
+ * same-origin endpoints. It never reads extension internals.
  */
 (async () => {
-  const pass = (m, d) => console.log('%c PASS ', 'background:#2f7d55;color:#fff', m, d ?? '');
-  const warn = (m, d) => console.log('%c WARN ', 'background:#8a6d1f;color:#fff', m, d ?? '');
-  const fail = (m, d) => console.log('%c FAIL ', 'background:#a93831;color:#fff', m, d ?? '');
-  const head = (m) => console.log(`\n%c${m}`, 'font-weight:bold;font-size:13px');
+  const P = (m, d) => console.log('%c PASS ', 'background:#2f7d55;color:#fff', m, d ?? '');
+  const W = (m, d) => console.log('%c WARN ', 'background:#8a6d1f;color:#fff', m, d ?? '');
+  const F = (m, d) => console.log('%c FAIL ', 'background:#a93831;color:#fff', m, d ?? '');
+  const H = (m) => console.log(`\n%c${m}`, 'font-weight:bold;font-size:13px');
 
-  const cookie = (name) => {
-    const m = document.cookie.match(new RegExp('(?:^|; )' + name + '=([^;]*)'));
-    return m ? decodeURIComponent(m[1]) : null;
-  };
+  const HOST = location.hostname;
+  const SITE =
+    /(^|\.)claude\.ai$/i.test(HOST) ? 'claude' :
+    /(^|\.)chatgpt\.com$|(^|\.)chat\.openai\.com$/i.test(HOST) ? 'chatgpt' :
+    /(^|\.)gemini\.google\.com$/i.test(HOST) ? 'gemini' : null;
 
-  head('1. Extension loaded');
-  if (window.__cmpLoaded) pass('content script is running');
-  else fail('content script NOT running — reload the tab after installing');
-  if (document.getElementById('cmp-root')) pass('panel container injected');
-  else warn('panel container missing (expected if the script failed to load)');
-
-  head('2. Site adapter');
-  const SITE = window.cmpSite;
+  H('1. Is the extension running here?');
+  console.log('   host:', HOST, '| detected site:', SITE || 'UNSUPPORTED');
   if (!SITE) {
-    fail('no adapter matched this host', location.hostname);
-    console.log('   Supported hosts are claude.ai, chatgpt.com, chat.openai.com.');
+    F('this host is not one the extension supports');
+    return;
+  }
+
+  const root = document.getElementById('cmp-root');
+  if (root) {
+    P('panel container is present — the content script ran');
   } else {
-    pass('adapter resolved', `${SITE.label} (${SITE.id})`);
-    if (SITE.canDelete === false) warn('this site does not support bulk delete', SITE.deleteNote);
-    if (SITE.domOnly) warn('this site has no API — the sidebar is the only source');
+    F('panel container missing');
+    console.log('   Most likely one of:');
+    console.log('     a) the extension was reloaded but THIS TAB was not — reload the page');
+    console.log('     b) this site is switched off in the popup under "Active on"');
+    console.log('     c) the extension failed to load — check chrome://extensions for a red Errors button');
   }
 
-  head('3. Conversation list');
-  if (!SITE) {
-    fail('skipped — no adapter');
-  } else if (SITE.domOnly) {
-    const found = document.querySelectorAll(SITE.linkSelector).length;
-    (found ? pass : fail)(`sidebar scrape matched ${found} element(s)`);
-    if (!found) console.log(`   Fix linkSelector for ${SITE.id} in sites.js.`);
-  } else {
-    try {
-      const list = await SITE.list();
-      pass(`returned ${list.length} conversations`);
-      const s = list[0];
-      if (!s) {
-        warn('list is empty — create a chat and re-run');
-      } else {
-        console.log('   sample record:', s);
-        [['uuid', s.uuid], ['title', s.title]].forEach(([k, v]) =>
-          v ? pass(`field "${k}" present`, v)
-            : fail(`field "${k}" MISSING — fix normalise() in sites.js`));
-        if (s.hasDate) pass('timestamps present — sorting and date filter work');
-        else warn('no timestamp — sort-by-date and the date filter will not work');
-      }
-    } catch (e) {
-      fail('list failed — the extension will fall back to DOM mode', e.message);
-      console.log('   Fix the adapter for this site in sites.js.');
-    }
-  }
+  const fab = root && root.querySelector('.cmp-fab');
+  if (root) (fab ? P : W)(fab ? 'launcher button rendered' : 'launcher button not rendered');
 
-  head('4. Delete endpoint (shape only — nothing is deleted)');
-  if (SITE) {
-    console.log(`   ${SITE.label} deletions go through SITE.remove() in sites.js`);
-    warn('cannot be verified read-only. Test it on ONE throwaway chat first.');
-  }
+  H('2. Classes currently applied to <html>');
+  const classes = [...document.documentElement.classList].filter((c) => c.startsWith('cmp-'));
+  if (classes.length) P(classes.join('  '));
+  else W('none — blur is off and appearance is on its defaults (both are opt-in)');
+  console.log('   Expected when blur is ON:    cmp-privacy-on plus cmp-blur-*');
+  console.log('   Expected when a theme is set: cmp-font-*, cmp-size-*, cmp-density-*, cmp-accent-*');
 
-  head('5. Blur selectors — how many elements each one matches here');
-  const targets = {
-    'chat titles':   ['a[href^="/chat/"]', 'a[href^="/cowork/"]', 'a[href^="/code/"]',
-                      'a[href^="/project/"]', 'a[href^="/projects/"]',
-                      'a[href^="/artifacts/"]', 'a[href^="/recents/"]',
-                      'a[href^="/c/"]', 'a[href^="/g/"]',
-                      'a[href^="/app/"]', '[data-test-id="conversation"]',
-                      '.conversation-title', '.conversation'],
-    'messages':      ['[data-testid="user-message"]', '[data-testid="assistant-message"]',
-                      '[data-testid="chat-message"]', '.font-claude-message', 'main .prose',
-                      '[data-message-author-role]', '[data-testid^="conversation-turn"]',
-                      'main .markdown', 'message-content', '.model-response-text',
-                      'user-query-content', '.query-text'],
-    'media':         ['main img', 'main video', 'main canvas', '[data-testid="file-thumbnail"]'],
-    'account':       ['[data-testid="user-menu-button"]', '[data-testid="account-menu"]',
-                      'nav footer', 'aside footer', '[data-testid="profile-button"]',
-                      '[data-testid="accounts-profile-button"]', '.user-name',
-                      '[aria-label^="Google Account"]'],
+  H('3. Do the title selectors match anything here?');
+  const TITLES = ['a[href^="/chat/"]', 'a[href^="/cowork/"]', 'a[href^="/code/"]',
+    'a[href^="/project/"]', 'a[href^="/projects/"]', 'a[href^="/artifacts/"]',
+    'a[href^="/recents/"]', 'a[href^="/c/"]', 'a[href^="/g/"]', 'a[href^="/app/"]',
+    '[data-test-id="conversation"]', '.conversation-title', '.conversation'];
+  let titleHits = 0;
+  TITLES.forEach((s) => {
+    let n = 0;
+    try { n = document.querySelectorAll(s).length; } catch { n = -1; }
+    if (n > 0) { titleHits += n; console.log(`     ${s} → ${n}`); }
+  });
+  (titleHits ? P : F)(`${titleHits} chat-title element(s) matched`);
+  if (!titleHits) console.log('   Nothing matched — blur and appearance both need this fixed in content.css.');
+
+  H('4. Other blur targets');
+  const GROUPS = {
+    messages: ['[data-testid="user-message"]', '[data-testid="assistant-message"]',
+      '.font-claude-message', 'main .prose', '[data-message-author-role]',
+      '[data-testid^="conversation-turn"]', 'main .markdown', 'message-content',
+      '.model-response-text', 'user-query-content', '.query-text'],
+    media: ['main img', 'main video', 'main canvas', '[data-testid="file-thumbnail"]'],
+    account: ['[data-testid="user-menu-button"]', '[data-testid="account-menu"]',
+      'nav footer', 'aside footer', '[data-testid="profile-button"]',
+      '[data-testid="accounts-profile-button"]', '.user-name', '[aria-label^="Google Account"]'],
     'message input': ['main [contenteditable="true"]', 'main .ProseMirror', 'main textarea',
-                      '[data-testid="chat-input"]', 'fieldset [contenteditable="true"]',
-                      '#prompt-textarea', '#composer-background [contenteditable="true"]',
-                      'rich-textarea', '.ql-editor'],
+      '[data-testid="chat-input"]', '#prompt-textarea', 'rich-textarea', '.ql-editor'],
   };
-
-  for (const [label, sels] of Object.entries(targets)) {
+  for (const [label, sels] of Object.entries(GROUPS)) {
     let total = 0;
-    const hits = sels.map((s) => {
+    const hits = [];
+    sels.forEach((s) => {
       let n = 0;
       try { n = document.querySelectorAll(s).length; } catch { n = -1; }
-      total += Math.max(n, 0);
-      return `${s} → ${n < 0 ? 'invalid' : n}`;
+      if (n > 0) { total += n; hits.push(`${s} → ${n}`); }
     });
-    (total > 0 ? pass : fail)(`${label}: ${total} element(s) matched`);
+    (total ? P : F)(`${label}: ${total} matched`);
     hits.forEach((h) => console.log('     ', h));
-    if (total === 0) {
-      console.log(`      %cNo match. Open the relevant view, re-run, and if still zero,`
-        + ` add a working selector to the "${label}" list in content.css.`,
-        'color:#a93831');
-    }
   }
+  console.log('   Open a conversation and re-run — messages and input only exist there.');
 
-  head('6. Route census — every internal link on this page, by first path segment');
-  console.log('   Any row with a count that is NOT covered by the "chat titles"');
-  console.log('   selectors above is a surface whose titles will stay unblurred.');
+  H('5. Route census — every internal link, by path shape');
   const census = {};
   document.querySelectorAll('a[href^="/"]').forEach((a) => {
     const parts = (a.getAttribute('href') || '').split('/');
-    const seg = parts[1] || '(root)';
-    const hasId = parts.length > 2 && parts[2].length > 0;
-    const key = hasId ? `/${seg}/<id>` : `/${seg}`;
+    const key = parts.length > 2 && parts[2] ? `/${parts[1]}/<id>` : `/${parts[1] || '(root)'}`;
     census[key] = (census[key] || 0) + 1;
   });
   const rows = Object.entries(census).sort((a, b) => b[1] - a[1]);
   if (rows.length) console.table(Object.fromEntries(rows));
-  else warn('no internal links found — is the sidebar collapsed?');
+  else W('no internal links found — is the sidebar collapsed?');
+  console.log('   Any /x/<id> row not covered in section 3 is a surface we are missing.');
 
-  head('Done');
-  console.log('Re-run on each site and surface you use. Claude renders different');
-  console.log('sidebars at /chat, /code and /cowork; ChatGPT uses /c and /g.');
+  H('6. Conversation API');
+  try {
+    if (SITE === 'claude') {
+      const org = (document.cookie.match(/(?:^|; )lastActiveOrg=([^;]*)/) || [])[1];
+      console.log('   lastActiveOrg cookie:', org ? decodeURIComponent(org) : 'absent');
+      const o = org ? decodeURIComponent(org)
+        : (await (await fetch('/api/organizations', { credentials: 'same-origin' })).json())[0]?.uuid;
+      const r = await fetch(`/api/organizations/${o}/chat_conversations?limit=5&offset=0`,
+        { credentials: 'same-origin', headers: { accept: 'application/json' } });
+      console.log('   list ->', r.status);
+      if (r.ok) {
+        const b = await r.json();
+        const list = Array.isArray(b) ? b : b?.data;
+        P(`returned ${list?.length ?? 0} record(s)`);
+        if (list?.[0]) console.log('   first record keys:', Object.keys(list[0]).join(', '));
+      } else F('list request failed — the panel will fall back to DOM mode');
+    } else if (SITE === 'chatgpt') {
+      const s = await (await fetch('/api/auth/session', { credentials: 'same-origin' })).json();
+      (s && s.accessToken ? P : F)(s && s.accessToken ? 'access token obtained' : 'no access token — signed out?');
+      if (s && s.accessToken) {
+        const r = await fetch('/backend-api/conversations?offset=0&limit=5&order=updated',
+          { credentials: 'same-origin', headers: { authorization: `Bearer ${s.accessToken}` } });
+        console.log('   list ->', r.status);
+        if (r.ok) {
+          const b = await r.json();
+          P(`returned ${b.items?.length ?? 0} of ${b.total ?? '?'} conversations`);
+          if (b.items?.[0]) console.log('   first record keys:', Object.keys(b.items[0]).join(', '));
+        } else F('list request failed — the panel will fall back to DOM mode');
+      }
+    } else {
+      W('Gemini has no usable API — the panel reads the sidebar instead, and bulk delete is unavailable there by design');
+    }
+  } catch (e) {
+    F('API probe threw', e.message);
+  }
+
+  H('Done — copy everything above');
 })();
