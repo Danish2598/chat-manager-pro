@@ -9,24 +9,31 @@ and a mismatch here is how listings drift.
 ## Item name
 
 ```
-Chat Manager Pro – Bulk Delete & Privacy for AI Chats
+Chat Manager Pro – Bulk Delete & Privacy for ChatGPT, Claude, Gemini
 ```
 
-53 / 75 characters.
+68 / 75 characters.
 
-The brand sits in the qualifier position, never leading. `Claude Chat Manager`
-would read as a first-party product and is the shape that gets pulled;
-`… for Claude` is descriptive use and is the pattern the large extensions in
-this category use. `Bulk Delete` is in the name deliberately — it is what people
-actually type into store search. Nobody searches "chat manager".
+The brand names are the qualifier, never the lead — `Claude Chat Manager` would
+read as a first-party product and is the shape that gets pulled, while
+`… for ChatGPT, Claude, Gemini` is descriptive use.
+
+Naming all three explicitly is deliberate. The Chrome Web Store has no keyword
+field; it indexes the title, the short description and the detailed
+description, and the title carries the most weight. People search the product
+they use — "delete all chatgpt chats", "claude bulk delete" — not "AI chats".
+An earlier draft said "for AI Chats", which was tidier and found by nobody.
+
+`Bulk Delete` is in the title for the same reason: it is the phrase with real
+search intent behind it. Nobody types "chat manager".
 
 ## Short description
 
 ```
-Bulk delete, search, sort and filter your Claude and ChatGPT chats. Blur and lock Claude, ChatGPT and Gemini.
+Bulk delete chats on ChatGPT, Claude and Gemini. Search your chat history, blur chats for privacy, and lock your screen.
 ```
 
-109 / 132 characters. The limit is hard and the upload fails at 133, so leave
+120 / 132 characters. The limit is hard and the upload fails at 133, so leave
 the margin alone when editing.
 
 ## Category
@@ -48,6 +55,13 @@ Manage your AI chat history the way you actually want to.
 Claude, ChatGPT and Gemini all leave you deleting chats one at a time, with no
 search across your history and no way to sort or filter it. Chat Manager Pro
 adds that — plus a privacy mode for when you are working somewhere public.
+
+WHAT PEOPLE USE IT FOR
+
+Deleting all your ChatGPT chats at once. Clearing old Claude conversations.
+Cleaning up Gemini chat history. Finding an old conversation by searching your
+whole history instead of scrolling. Hiding chat titles and messages from people
+around you. Locking the screen when you step away from your desk.
 
 SUPPORTED SITES
 • Claude — manage, bulk delete, blur, lock

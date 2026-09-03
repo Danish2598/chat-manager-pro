@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Chat Manager Pro \u2013 Bulk Delete & Privacy for AI Chats",
+  "name": "Chat Manager Pro \u2013 Bulk Delete & Privacy for ChatGPT, Claude, Gemini",
   "version": "1.0.0",
-  "description": "Bulk delete, search, sort and filter your Claude and ChatGPT chats. Blur and lock Claude, ChatGPT and Gemini.",
+  "description": "Bulk delete chats on ChatGPT, Claude and Gemini. Search your chat history, blur chats for privacy, and lock your screen.",
   "permissions": [
     "storage"
   ],
