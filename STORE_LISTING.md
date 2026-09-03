@@ -154,20 +154,19 @@ Then tick all three certifications:
 
 **Privacy policy URL:** required by the store.
 
-`privacy-policy.html` in this repo is a complete, self-contained page built for
-exactly this — host it and paste the URL into the submission form. GitHub Pages
-works: push the repo, enable Pages, and the policy lives at
-`https://<user>.github.io/<repo>/privacy-policy.html`.
+**Live and ready to paste into the submission form:**
 
-Before publishing it, replace the two placeholders:
+```
+https://danish2598.github.io/chat-manager-pro/privacy-policy.html
+```
 
-- `REPLACE-WITH-YOUR-CONTACT-EMAIL` (appears twice on one line — the link and
-  its text)
-- `REPLACE-WITH-YOUR-NAME-OR-COMPANY` in the footer
+Served by GitHub Pages from `main`. Editing `privacy-policy.html` and pushing
+republishes it automatically — no separate deploy step.
 
-A privacy policy with an unreachable contact address is a rejection reason, and
-the address becomes public — use one you are willing to publish, not necessarily
-your personal inbox.
+Contact in the policy points at the repo's issue tracker rather than a personal
+inbox, deliberately: the address on a privacy policy is public and permanently
+scraped. To use an email instead, edit section 12 of `privacy-policy.html` and
+push.
 
 ---
 
@@ -193,7 +192,7 @@ are a permanent, public data leak.
 - [ ] `manifest.json` name and description match this file
 - [ ] Version bumped
 - [ ] Icons present at 16 / 48 / 128
-- [ ] Privacy policy published at a public URL and linked
+- [x] Privacy policy published: https://danish2598.github.io/chat-manager-pro/privacy-policy.html
 - [ ] Trademark disclaimer present at the end of the description
 - [ ] No Anthropic logo, wordmark, or brand colours in icon or screenshots
 - [ ] Screenshots taken on a throwaway account

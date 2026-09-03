@@ -99,6 +99,14 @@ second to slow guessing.
 
 ---
 
+## Links
+
+- **Source:** https://github.com/Danish2598/chat-manager-pro
+- **Privacy policy:** https://danish2598.github.io/chat-manager-pro/privacy-policy.html
+- **Licence:** MIT
+
+---
+
 ## Install (unpacked)
 
 1. Open `chrome://extensions`
@@ -157,8 +165,9 @@ tools_make_icons.py   Regenerates the icons (stdlib only, no PIL)
 tools_verify.js   Read-only console diagnostic for endpoints and selectors
 TESTING.md        Step-by-step test plan and checklist
 STORE_LISTING.md  Chrome Web Store submission copy and checklist
-privacy-policy.html  Publishable privacy policy page (host this)
+privacy-policy.html  Privacy policy page, served by GitHub Pages
 PRIVACY.md        Plain-text mirror of the privacy policy
+LICENSE           MIT
 ```
 
 ---
