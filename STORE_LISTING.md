@@ -222,12 +222,12 @@ appearance screen.
 
 ## Pre-submission checklist
 
-- [ ] `manifest.json` name and description match this file
-- [ ] Version bumped
-- [ ] Icons present at 16 / 48 / 128
+- [x] `manifest.json` name and description match this file
+- [x] Version bumped
+- [x] Icons present at 16 / 48 / 128
 - [x] Privacy policy published: https://danish2598.github.io/chat-manager-pro/privacy-policy.html
-- [ ] Trademark disclaimer present at the end of the description
-- [ ] No Anthropic logo, wordmark, or brand colours in icon or screenshots
+- [x] Trademark disclaimer present at the end of the description
+- [x] No Anthropic logo, wordmark, or brand colours in icon or screenshots
 - [x] Screenshots generated (`python3 tools_screenshots.py --render`) — no real chat titles in them
 - [ ] Publisher contact email added **and verified** — publishing is blocked
       without it (Settings → Profile → Add email)
