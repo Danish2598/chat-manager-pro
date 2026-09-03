@@ -231,9 +231,28 @@ appearance screen.
 - [x] Screenshots generated (`python3 tools_screenshots.py --render`) — no real chat titles in them
 - [ ] Trader / non-trader status answered (required for EU distribution)
 - [ ] Tested on a clean Chrome profile, installed unpacked, from a cold load
-- [ ] **Bulk delete executed successfully at least once on a throwaway chat, on
-      each site that advertises it (Claude and ChatGPT)** — see the note below
-- [ ] `tools_verify.js` run on Claude, ChatGPT and Gemini with no FAIL lines
+- [x] Bulk delete executed successfully on **Claude**
+- [ ] Bulk delete executed successfully on **ChatGPT** — a separate mechanism, see below
+- [ ] `tools_verify.js` run on each site with no FAIL lines
+
+### Claude passing does not cover ChatGPT
+
+The two adapters share no code on the operation that matters:
+
+| | Claude | ChatGPT |
+|---|---|---|
+| Auth | session cookie | bearer token from `/api/auth/session` |
+| Verb | `DELETE` | `PATCH` |
+| Semantics | removes the conversation | clears `is_visible` |
+
+Claude working confirms the panel, the selection model, the undo window, the
+rate limiting and the progress reporting — all shared. It confirms nothing
+about whether ChatGPT's token fetch succeeds or its request body is the shape
+that site expects.
+
+The listing names ChatGPT, so if that call is wrong the listing promises a
+feature that does not work, which is a removal reason. One throwaway chat
+settles it.
 
 ### Why bulk delete blocks the submission
 
