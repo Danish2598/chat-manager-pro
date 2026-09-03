@@ -1,9 +1,12 @@
 """
-Builds Chrome Web Store screenshots at exactly 1280x800.
+Builds Chrome Web Store screenshots (1280x800) and promo tiles.
 
 Renders the real panel and popup stylesheets over a neutral chat-app mock —
 neutral on purpose: a store screenshot must not reproduce another company's
 interface or branding, and a mock cannot leak real conversation titles.
+
+Chrome headless writes RGB PNGs with no alpha channel, which is what the store
+requires for screenshots and promo tiles.
 
 Writes store-assets/*.html, then render them with:
     python3 tools_screenshots.py --render

@@ -215,6 +215,28 @@ titles the way a screenshot of your own account would.
 Edit the copy in `tools_screenshots.py` and re-render — the captions are the
 listing's headlines and are worth iterating on.
 
+### Promo tiles
+
+`promo-small-440x280.png` and `promo-marquee-1400x560.png` are also generated.
+Both optional — the small tile appears in some category and search placements,
+the marquee only if Google features the item.
+
+### Field-by-field
+
+| Field | Value |
+|---|---|
+| Description | `store-assets/description.txt` (2,744 / 16,000) |
+| Category | Productivity |
+| Language | English |
+| Store icon | `icons/icon-128.png` |
+| Screenshots | `store-assets/1..5-*.png` in order |
+| Small promo tile | `store-assets/promo-small-440x280.png` |
+| Marquee promo tile | `store-assets/promo-marquee-1400x560.png` |
+| Official URL | None |
+| Homepage URL | `https://github.com/Danish2598/chat-manager-pro` |
+| Support URL | `https://github.com/Danish2598/chat-manager-pro/issues` |
+| Mature content | Off |
+
 Note on `4-screen-lock.png`: the background is blank because the lock really is
 opaque. That is the feature working, not a rendering fault. If you would rather
 the slot showed something busier, swap it for the vision simulator or the
